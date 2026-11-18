@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>SQUAWK Tester Handbook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap">
+<style>
+/* Layout: eine Lesespalte wie ein Gerätehandbuch, Tabellen in eigenen Scroll-Containern, Bedienbegriffe als Tasten-Chips. Inhalt Englisch (Tester-Handbuch, Marc 17. Nov. 2026). */
+:root {
+  --bg: #E5E3DE;        /* helles Basalt-Grau */
+  --surface: #EFEDE9;   /* Kästen, Tabellenkopf */
+  --ink: #1C1D1F;
+  --muted: #6E6C67;     /* Gravur-Grau */
+  --rule: #C9C6BF;
+  --chip: #D6D4CE;
+  --chip-edge: #AFACA5;
+  --rec: #B4473C;       /* nur wie REC */
+  --lcd: #1B1C1A;
+  --lcd-ink: #D0D0CE;
+  --sans: "IBM Plex Sans Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1E1F21; --surface: #26272A; --ink: #E4E2DD; --muted: #A4A198; --rule: #3A3B3E;
+    --chip: #313236; --chip-edge: #4A4B4F; --rec: #EE7262; --lcd: #121312; --lcd-ink: #D0D0CE;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1E1F21; --surface: #26272A; --ink: #E4E2DD; --muted: #A4A198; --rule: #3A3B3E;
+  --chip: #313236; --chip-edge: #4A4B4F; --rec: #EE7262; --lcd: #121312; --lcd-ink: #D0D0CE;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 17px/1.55 var(--sans); margin: 0; }
+.wrap {
+  max-width: 76ch; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 72px;
+}
+h1, h2, h3, h4 { font-family: var(--sans); text-wrap: balance; line-height: 1.2; }
+h1 { font-size: 2.4rem; font-weight: 600; letter-spacing: .16em; margin: 0; }
+h2 { font-size: 1.55rem; font-weight: 600; margin: 3.2rem 0 .9rem; padding-top: 1.4rem; border-top: 2px solid var(--ink); display: flex; gap: .6em; align-items: baseline; }
+h2 .no { font: 500 .85rem/1 var(--mono); color: var(--muted); letter-spacing: .06em; }
+h3 { font-size: 1.15rem; font-weight: 600; margin: 2rem 0 .5rem; }
+h4 { font-size: 1rem; font-weight: 600; margin: 1.4rem 0 .3rem; }
+p { margin: .6rem 0; }
+ul, ol { padding-left: 1.3em; margin: .6rem 0; }
+li { margin: .25rem 0; }
+li::marker { color: var(--muted); }
+a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 3px; }
+a:focus-visible, video:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.eyebrow { font: 500 .78rem/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.lead { font-size: 1.2rem; line-height: 1.45; }
+.muted { color: var(--muted); }
+small, .small { font-size: .88rem; }
+
+/* Kopf */
+.head { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 20px; align-items: center; padding-bottom: 22px; border-bottom: 2px solid var(--ink); }
+.head img { width: 88px; height: 88px; border-radius: 20px; display: block; }
+.head .sub { margin: .35rem 0 0; color: var(--muted); }
+.engrave { font: 500 .72rem/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.engrave .led { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--muted); margin-right: 6px; vertical-align: 1px; }
+
+/* Inhaltsverzeichnis */
+nav.toc { margin: 22px 0 0; }
+nav.toc ol { list-style: none; padding: 0; margin: .5rem 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 4px 24px; }
+nav.toc li { margin: 0; display: grid; grid-template-columns: 2.2em minmax(0, 1fr); }
+nav.toc li span { font: 500 .85rem/1.7 var(--mono); color: var(--muted); }
+
+/* Tasten-Chips */
+kbd {
+  font: 500 .74em/1 var(--mono); letter-spacing: .04em;
+  display: inline-block; padding: .28em .45em .24em; margin: 0 .05em;
+  background: var(--chip); color: var(--ink);
+  border: 1px solid var(--chip-edge); border-bottom-width: 2px; border-radius: 4px;
+  white-space: nowrap; vertical-align: .08em;
+}
+kbd.rec { color: var(--rec); border-color: var(--rec); }
+code { font: .86em var(--mono); }
+
+/* LCD-Zeilen für Display-Texte */
+.lcd { font: 500 .78em/1 var(--mono); letter-spacing: .05em; background: var(--lcd); color: var(--lcd-ink); padding: .25em .45em; border-radius: 3px; white-space: nowrap; }
+
+/* Kästen */
+.box { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; margin: 1rem 0; }
+.box > :first-child { margin-top: 0; }
+.box > :last-child { margin-bottom: 0; }
+.box.rec { border-left: 3px solid var(--rec); }
+.pill { font: 500 .7rem/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; border: 1px solid var(--muted); color: var(--muted); border-radius: 3px; padding: 3px 5px; white-space: nowrap; vertical-align: .15em; }
+.pill.rec { border-color: var(--rec); color: var(--rec); }
+
+/* Tabellen */
+.tw { overflow-x: auto; margin: .9rem 0 1.2rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .93rem; line-height: 1.45; }
+th, td { text-align: left; vertical-align: top; padding: 8px 12px; border-bottom: 1px solid var(--rule); }
+th { font: 500 .72rem/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+table.grid4 td { width: 25%; }
+
+/* Geschichten */
+.stories { display: grid; gap: 14px; margin-top: 1rem; }
+.story { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+.story h3 { margin: 0 0 .5rem; }
+.story dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; margin: 0; }
+.story dt { font: 500 .72rem/1.9 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.story dd { margin: 0; }
+@media (max-width: 520px) { .story dl { grid-template-columns: minmax(0, 1fr); gap: 0 0; } .story dt { margin-top: 6px; } }
+
+/* Bilder und Videos */
+figure { margin: 1rem 0; }
+figure img, figure video { max-width: 100%; height: auto; display: block; border-radius: 8px; }
+figcaption { font-size: .88rem; color: var(--muted); margin-top: .4rem; }
+.shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; margin: 1rem 0; }
+.shots.wide { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.shots figure { margin: 0; min-width: 0; }
+.shots figcaption b { color: var(--ink); font-weight: 600; display: block; }
+.pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; align-items: start; }
+.pair > * { min-width: 0; }
+.videos { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; margin: 1rem 0; }
+.videos figure { margin: 0; min-width: 0; }
+.videos video { width: 100%; max-width: 260px; background: var(--lcd); }
+
+blockquote { margin: 1rem 0; padding: 10px 16px; border-left: 3px solid var(--muted); background: var(--surface); border-radius: 0 6px 6px 0; }
+blockquote p { margin: .3rem 0; }
+.en { font-style: normal; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0; }
+footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: .88rem; }
+@media (max-width: 480px) {
+  body { font-size: 16px; }
+  h1 { font-size: 1.9rem; }
+  .head { grid-template-columns: 64px minmax(0, 1fr); gap: 14px; }
+  .head img { width: 64px; height: 64px; border-radius: 15px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; }
+
+/* Einarbeitung: Wege entlang der Store-Bilder */
+.weg { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 22px; align-items: start; margin: 1.6rem 0 2.2rem; }
+.weg figure { margin: 0; }
+.weg figure img { border-radius: 10px; }
+.weg h3 { margin: 0 0 .2rem; }
+.weg .claim { font: 500 .82rem/1.4 var(--mono); color: var(--muted); letter-spacing: .03em; margin: 0 0 .6rem; }
+.weg ol { margin: .4rem 0 .6rem; }
+.weg .why { font-size: .95rem; color: var(--muted); margin: .4rem 0 0; }
+@media (max-width: 560px) { .weg { grid-template-columns: 110px minmax(0, 1fr); gap: 14px; } }
+@media (max-width: 400px) { .weg { grid-template-columns: minmax(0, 1fr); } .weg figure { max-width: 160px; } }
+details.ref { border-top: 1px solid var(--rule); padding: .2rem 0; }
+details.ref:last-of-type { border-bottom: 1px solid var(--rule); }
+details.ref > summary { cursor: pointer; list-style: none; display: flex; gap: .7em; align-items: baseline; padding: .7rem 0; font-weight: 600; font-size: 1.1rem; }
+details.ref > summary::-webkit-details-marker { display: none; }
+details.ref > summary::before { content: "+"; font: 500 1rem/1 var(--mono); color: var(--muted); width: 1em; }
+details.ref[open] > summary::before { content: "−"; }
+details.ref > summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+details.ref > .inner { padding: 0 0 1.4rem; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin: .8rem 0 1.6rem; }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; min-width: 0; display: flex; flex-direction: column; }
+.card img.lcdimg { width: 100%; display: block; background: var(--lcd); }
+.card .cbody { padding: 10px 14px 12px; }
+.card h4 { margin: 0 0 .3rem; display: flex; gap: .5em; align-items: baseline; font: 600 1rem/1.2 var(--mono); letter-spacing: .06em; }
+.card h4 .no { color: var(--muted); font-weight: 500; font-size: .8rem; }
+.card .lr { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0 0 .4rem; font: .82rem/1.4 var(--mono); color: var(--muted); }
+.card .lr b { display: inline-block; width: 1.4em; height: 1.4em; line-height: 1.4em; text-align: center; border: 1px solid var(--muted); border-radius: 50%; font-size: .72rem; margin-right: 4px; color: var(--ink); }
+.card p { margin: .3rem 0 0; font-size: .93rem; }
+figure.pads { max-width: 560px; }
+figure.pads img { border-radius: 10px; }
+.lcdph { background: var(--lcd); color: var(--lcd-ink); aspect-ratio: 1090 / 300; display: flex; flex-direction: column; justify-content: center; padding: 0 7%; font: 500 1.6rem/1.2 var(--mono); letter-spacing: .08em; }
+.lcdph small { font-size: .8rem; opacity: .7; letter-spacing: .04em; }
+.duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.duo > * { min-width: 0; }
+</style>
+<div class="wrap">
+<header>
+  <div class="engrave"><span><span class="led"></span>MIDI IN · OUT</span><span>MIC · AUv3</span></div>
+  <div class="head"><img src="i/icon.jpg" alt="SQUAWK app icon">
+    <div><div class="eyebrow">Tester handbook · 18 Nov 2026 · beta, confidential</div><h1>SQUAWK</h1>
+    <p class="sub">What it is, the first minute, then every part of the device. Beta notes and how to send feedback are in chapter 11.</p></div></div>
+  <nav class="toc" aria-label="Contents"><div class="eyebrow">Contents</div><ol><li><span>01</span><a href="#what">What SQUAWK is</a></li><li><span>02</span><a href="#first">The first minute</a></li><li><span>03</span><a href="#device">The device</a></li><li><span>04</span><a href="#parts">Drums, Synth, Sampler</a></li><li><span>05</span><a href="#steps">STEPS and the sequencer</a></li><li><span>06</span><a href="#shape">SHAPE: 16 pages per sound</a></li><li><span>07</span><a href="#master">MASTER: 16 effects</a></li><li><span>08</span><a href="#tracks">Tracks, SAVE, LOAD, files</a></li><li><span>09</span><a href="#midi">MIDI, AUv3, iPad and Mac</a></li><li><span>10</span><a href="#help">Hold any key for help</a></li><li><span>11</span><a href="#beta">Beta notes and feedback</a></li><li><span>12</span><a href="#ways">Eight ways in</a></li></ol></nav>
+</header>
+<p class="small muted" style="margin-top:1.4rem">Notation: keys appear as <kbd>LIVE</kbd>, <kbd>2ND</kbd>, <kbd class="rec">●</kbd>, display text as <span class="lcd">PRESS ▶ TO PLAY</span>. L and R are the two knobs. “2ND, then X” means: tap 2ND, then tap X.</p>
+
+<h2 id="what"><span class="no">01</span>What SQUAWK is</h2>
+<p class="lead">SQUAWK is a groovebox for iPhone: drums, synth and sampler on one screen, played like a hardware device.</p>
+<p>It has 16 pads, two knobs, a part switch and nine keys. There are no menus and no second screen.</p>
+<ul>
+  <li><b>Three parts at once.</b> DRUMS has 16 kits, SYNTH has 16 instruments, SAMPLER has 16 banks for your own sounds. All three always play. The switch picks the part you edit.</li>
+  <li><b>Played by hand.</b> Every beat comes from the pads, the steps, or <kbd class="rec">●</kbd> and <kbd>▶</kbd>. SQUAWK does not compose for you. STYLE offers ready-made pieces as a starting point.</li>
+  <li><b>Your own sounds.</b> Record with the microphone, shape on 16 pages, keep the result in 16 banks. The banks belong to the device, so every track can use them.</li>
+  <li><b>Everything is labelled.</b> Hold any key and the display explains it.</li>
+  <li><b>Offline.</b> No account, no ads, no data collection. No internet needed.</li>
+  <li><b>Everywhere.</b> iPhone, iPad and Mac with Apple silicon, and as an AUv3 instrument inside music apps.</li>
+</ul>
+<p>The name: “squawk” is the transponder code in a cockpit, and also a harsh, croaking sound. The cockatoo between the knobs is an emblem, not a control.</p>
+<figure style="max-width:260px"><video controls playsinline preload="metadata" src="i/video-iphone.mp4"></video><figcaption>Video A “Make it”, 25 s: record a knock onto a pad, filter it in SHAPE, tap a beat in STEPS, press ▶, add an effect.</figcaption></figure>
+
+<h2 id="first"><span class="no">02</span>The first minute</h2>
+<ol>
+  <li>Open SQUAWK. The <kbd>▶</kbd> key breathes orange. Line 2 says <span class="lcd">PRESS ▶ TO PLAY</span>.</li>
+  <li>Press <kbd>▶</kbd>. The piece RAIN plays, a 2-step garage groove at 132 BPM. It sits in track slot TR 01.</li>
+  <li>You are in DRUMS · LIVE with the kit PUNCH. Tap the pads to play drums.</li>
+  <li>From here, a short tour shows you the device, one step at a time.</li>
+</ol>
+
+<h3>The tour</h3>
+<p>The control to use next breathes orange. Line 2 names the step. Tap the orange control and the next step follows. Between steps there are 2 to 4 seconds to listen.</p>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>Orange</th><th>Line 2</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td><kbd>▶</kbd></td><td><span class="lcd">PRESS ▶ TO PLAY</span></td></tr>
+<tr><td class="n">2</td><td><kbd>SYNTH</kbd> on the switch, after 4 s of beat</td><td><span class="lcd">SYNTH · ALL THREE PLAY</span></td></tr>
+<tr><td class="n">3</td><td>a pad, bottom left (any pad counts)</td><td><span class="lcd">PLAY ALONG ON THE PADS</span></td></tr>
+<tr><td class="n">4</td><td><kbd>MASTER</kbd></td><td><span class="lcd">MASTER = EFFECTS ON ALL</span></td></tr>
+<tr><td class="n">5</td><td>the pad <kbd>STUTTER</kbd></td><td><span class="lcd">HOLD STUTTER</span></td></tr>
+<tr><td class="n">6</td><td><kbd>SHAPE</kbd></td><td><span class="lcd">SHAPE THE SYNTH</span></td></tr>
+<tr><td class="n">7</td><td>the pointer of knob L</td><td><span class="lcd">TURN L · SEE THE CURVE</span></td></tr>
+<tr><td class="n">8</td><td><kbd>DRUMS</kbd> on the switch</td><td><span class="lcd">DRUMS · WRITE A BEAT</span></td></tr>
+<tr><td class="n">9</td><td><kbd>STEPS</kbd></td><td><span class="lcd">STEPS = THE 16 STEPS</span></td></tr>
+<tr><td class="n">10</td><td><kbd class="rec">●</kbd></td><td><span class="lcd">● = WRITE</span></td></tr>
+<tr><td class="n">11</td><td>step 3 (any step counts)</td><td><span class="lcd">TAP A STEP TO SET IT</span></td></tr>
+<tr><td class="n">12</td><td><kbd>2ND</kbd>, then the pad <kbd>SAVE</kbd></td><td><span class="lcd">2ND, THEN SAVE</span></td></tr>
+<tr><td class="n">13</td><td><kbd>2ND</kbd>, then <kbd>STEPS</kbd></td><td><span class="lcd">2ND, THEN STEPS: STYLE</span></td></tr>
+<tr><td class="n">14</td><td><kbd>SAMPLER</kbd> on the switch</td><td><span class="lcd">SAMPLER · ● + HOLD = MIC</span></td></tr>
+</tbody></table></div>
+<ul>
+  <li>Any other key, the switch, <kbd>2ND</kbd> or a knob ends the tour quietly.</li>
+  <li>Pads stay free unless one pad is orange. So you can play along and set steps without leaving the tour.</li>
+  <li>The tour never presses anything for you and plays nothing by itself. What you do in SAVE, STYLE or with the microphone is up to you.</li>
+  <li>An ended tour starts again on the next cold start, until you have finished it once. After that it does not come back. RESET · LIKE NEW starts it again.</li>
+  <li>With Reduce Motion, the orange light glows steadily instead of breathing. The plug-in has no tour.</li>
+</ul>
+<div class="box">
+<p><b>Orange means “next step here”.</b> Orange is used for nothing else. White means on, selected or playing, and does the same during the tour as later. Red means writing.</p>
+</div>
+
+<h3>STYLE: 16 ready pieces</h3>
+<p>Tap <kbd>2ND</kbd>, then <kbd>STEPS</kbd>. The engraving above STEPS reads STYLE. The pads now show 16 pieces.</p>
+<div class="tw"><table class="grid4">
+<thead><tr><th>Row</th><th>Pad 1</th><th>Pad 2</th><th>Pad 3</th><th>Pad 4</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><kbd>RAIN</kbd></td><td><kbd>NIGHT</kbd></td><td><kbd>FEVER</kbd></td><td><kbd>COMET</kbd></td></tr>
+<tr><td>2</td><td><kbd>FOUND</kbd></td><td><kbd>NEON</kbd></td><td><kbd>GOLDEN</kbd></td><td><kbd>HOUSE</kbd></td></tr>
+<tr><td>3</td><td><kbd>LOFI</kbd></td><td><kbd>DISCO</kbd></td><td><kbd>TRAP</kbd></td><td><kbd>DEEP</kbd></td></tr>
+<tr><td>4</td><td><kbd>TECHNO</kbd></td><td><kbd>BREAKS</kbd></td><td><kbd>AMBIENT</kbd></td><td><kbd>DUB</kbd></td></tr>
+</tbody></table></div>
+<ul>
+  <li>Pads 1 to 7 are full pieces with four patterns each. Pads 8 to 16 are genre starting points with one pattern each. Details in <a href="#style">chapter 5</a>.</li>
+  <li>A tap replaces the whole track: all patterns, tempo, swing, key, sound settings and the kit. It plays at once.</li>
+  <li>If the track holds your own work, SQUAWK asks first: <span class="lcd">REPLACE YOUR TRACK? TAP AGAIN</span>. The red LED blinks. Tap the same pad again to replace. Any other input cancels.</li>
+  <li>An empty track, or a piece you have not changed, is replaced without asking. So you can listen through all 16.</li>
+  <li>STYLE stays open. <kbd>▶</kbd> stops and starts without closing it. <kbd>2ND</kbd> or another key closes it.</li>
+  <li>One undo step brings back what was there: <kbd>2ND</kbd>, then <kbd class="rec">●</kbd>.</li>
+  <li>STYLE keeps the track name, the effect amounts and the sampler banks.</li>
+</ul>
+<div class="box rec">
+<p><b>Keep your work with SAVE.</b> In this beta, a cold start throws away everything you did not save. See <a href="#beta">chapter 11</a>.</p>
+</div>
+<p>For a walk through the eight store images, see <a href="#ways">chapter 12</a>.</p>
+
+<h2 id="device"><span class="no">03</span>The device</h2>
+<p>From top to bottom:</p>
+<ul>
+  <li><b>Engraving:</b> left a status LED and “MIDI IN · OUT”. The LED lights while MIDI is connected. Right “MIC · AUv3”.</li>
+  <li><b>Display:</b> the big line shows what the knobs set right now. Usually that is the sound (drum, instrument or sample). In SHAPE it is the page, in MASTER the effect. Line 2 says what is happening: a knob value, a held step, a hint or the status line. The pixel field on the right shows the pattern of all parts, values and the curve of a SHAPE page. Top right shows ■ or ▶, with a red ● while writing.</li>
+  <li><b>Two knobs, L and R:</b> TONE and DECAY are engraved below, FILTER and ATTACK above.</li>
+  <li><b>Part switch</b> <kbd>DRUMS</kbd> · <kbd>SYNTH</kbd> · <kbd>SAMPLER</kbd>, and next to it the key <kbd>MASTER</kbd>.</li>
+  <li><b>16 pads:</b> the label on a pad says what it does now. Engraved above each pad is a second function: <kbd>2ND</kbd>, then the pad.</li>
+  <li><b>Keys:</b> <kbd>LIVE</kbd> · <kbd>STEPS</kbd> · <kbd>SOUNDS</kbd> · <kbd>SHAPE</kbd>, below them <kbd>2ND</kbd> · <kbd>PATTERN</kbd> · <kbd class="rec">●</kbd> · <kbd>▶</kbd>. Engraved above: STYLE over STEPS, MUTE over SOUNDS, RESET over SHAPE, CHAIN over PATTERN, UNDO over ●.</li>
+</ul>
+
+<div class="box">
+<p><b>Three rules.</b></p>
+<ul>
+  <li><kbd class="rec">●</kbd> means writing. Without ●, a tap in STEPS only listens. With ●, a tap sets or deletes a step, and ● with ▶ records what you play.</li>
+  <li><kbd>2ND</kbd> works like on a calculator. Tap 2ND, then one key or pad. That opens the engraved function. 2ND is never held.</li>
+  <li><kbd>2ND</kbd>, then <kbd class="rec">●</kbd> is UNDO. It goes back up to 64 steps. Press it again to go further back.</li>
+</ul>
+</div>
+
+<h3>Views</h3>
+<ul>
+  <li><kbd>LIVE</kbd> is home. The pads play sounds. Exactly one of LIVE, STEPS and SHAPE is lit. Pressing STEPS or SHAPE again takes you back to LIVE.</li>
+  <li><kbd>STEPS</kbd> shows the 16 steps of the selected part.</li>
+  <li><kbd>SOUNDS</kbd> picks a kit, an instrument or a bank. It stays open. LIVE glows dimly next to it as the way back.</li>
+  <li><kbd>SHAPE</kbd> opens 16 pages to change the selected sound.</li>
+  <li><kbd>PATTERN</kbd> shows 16 patterns. It stays open, so you can listen through them. A tap picks a pattern and plays it.</li>
+  <li><kbd>MASTER</kbd> comes on top of the current part. While MASTER is on, LIVE and STEPS work on the 16 effects. Tap MASTER again or tap a part to leave. SHAPE always shapes the instrument and ends MASTER.</li>
+  <li><kbd>▶</kbd> plays and stops. Stop is stop: all voices end within 30 ms, reverb, delay and the reflections of a place within 50 ms.</li>
+</ul>
+
+<h3>Knobs</h3>
+<p>Drag up or down. The travel is long and fixed. Double-tap resets to the default. The value appears in the display.</p>
+<div class="tw"><table>
+<thead><tr><th>Where</th><th>L</th><th>R</th></tr></thead>
+<tbody>
+<tr><td><kbd>LIVE</kbd></td><td>TONE</td><td>DECAY</td></tr>
+<tr><td><kbd>LIVE</kbd> after 2ND + knob</td><td>FILTER</td><td>ATTACK</td></tr>
+<tr><td><kbd>SOUNDS</kbd></td><td colspan="2">the two other sound controls of the instrument, e.g. DRIVE · LEVEL (chapter 4)</td></tr>
+<tr><td><kbd>STEPS</kbd></td><td>DRUM, NOTE or PAD</td><td>VELO</td></tr>
+<tr><td><kbd>SHAPE</kbd></td><td colspan="2">the pair of the open page, e.g. DISTANCE · PLACE on SPACE (chapter 6)</td></tr>
+<tr><td><kbd>MASTER</kbd> × <kbd>LIVE</kbd></td><td>AMOUNT (fully left = dry)</td><td>character of the effect, e.g. TIME</td></tr>
+<tr><td><kbd>MASTER</kbd> × <kbd>STEPS</kbd></td><td>EFFECT</td><td>AMOUNT</td></tr>
+<tr><td>TEMPO · SCALE · SAVE</td><td>BPM · ROOT · LETTER 1</td><td>SWING · OCTAVE · LETTER 2</td></tr>
+</tbody></table></div>
+<ul>
+  <li>Whenever the knobs set something that is not engraved, both engravings dim. Line 2 then names the pair, for example <span class="lcd">Ⓛ DRIVE · Ⓡ LEVEL</span>.</li>
+  <li>TONE and DECAY mean: drums tune and decay, Plaits-based synths timbre and decay, SQUELCH cutoff and filter-envelope decay, SAX, GUITAR and E-BASS tone and decay, sampler pitch and length.</li>
+  <li>FILTER is a DJ filter. Centre is off, left is low-pass down to 100 Hz, right is high-pass up to 5 kHz. ATTACK goes from instant to 1 s. Both work the same on every sound.</li>
+  <li>In LIVE, 2ND and then turning a knob (or a double-tap) locks both knobs to FILTER · ATTACK. 2ND stays lit and the pads keep playing. The next press on 2ND goes back. STEPS also goes back.</li>
+  <li>Values belong to the sound and are saved with the track.</li>
+</ul>
+
+<h3>Lights and feel</h3>
+<ul>
+  <li>White: on, selected, playing. Red: writing, and a blinking red LED means “tap again to confirm”. Orange: the next step of the tour.</li>
+  <li>Every key and pad has a status LED top right. On a pad, the LED means “now” (selected, playing). The bar at the bottom means “something is there” (used, in the pattern, changed).</li>
+  <li>Engravings are dark, like engraved stone. They glow white while 2ND is armed. A second function that is open lights its engraving.</li>
+  <li>Keys click and the switch snaps. Knobs have a detent per value, with a stronger one in the centre. There is no haptic feedback while you play pads or set steps. iPad and Mac have no haptics.</li>
+  <li>Pads trigger on touch-down.</li>
+</ul>
+
+<h2 id="parts"><span class="no">04</span>Drums, Synth, Sampler</h2>
+
+<h3>DRUMS</h3>
+<p>With the switch on <kbd>DRUMS</kbd>, the 16 pads are the 16 drums of a kit. In <kbd>LIVE</kbd> a tap plays the drum and selects it. The knobs set TONE and DECAY of that drum. In <kbd>SOUNDS</kbd> a pad picks one of 16 kits, and the knobs set DRIVE · LEVEL.</p>
+<figure class="pads"><img src="h/pads-drums-live.jpg" alt="Pads in DRUMS LIVE, kit PUNCH" loading="lazy"><figcaption>DRUMS · LIVE, kit PUNCH. Each pad carries its drum. The second function is engraved above it.</figcaption></figure>
+<ul>
+  <li>The closed hat cuts off the open hat in every kit.</li>
+  <li>All 16 kits play at about the same loudness.</li>
+</ul>
+<div class="tw"><table>
+<thead><tr><th>Kit</th><th>Source</th><th>Character</th></tr></thead>
+<tbody>
+<tr><td><kbd>MODULAR</kbd></td><td>synthesised</td><td>hard, short</td></tr>
+<tr><td><kbd>PUNCH</kbd></td><td>drum machine samples</td><td>punchy, clap up front</td></tr>
+<tr><td><kbd>BLIP</kbd></td><td>analogue synthesis</td><td>tight, clicky, cowbell and shaker</td></tr>
+<tr><td><kbd>BOOM</kbd></td><td>drum machine samples</td><td>deep kick, congas, claves, maracas</td></tr>
+<tr><td><kbd>TINY</kbd></td><td>drum machine samples</td><td>bright, short, cymbals</td></tr>
+<tr><td><kbd>HEAVY</kbd></td><td>drum machine samples</td><td>heavy, snap and cowbell</td></tr>
+<tr><td><kbd>SOFT</kbd></td><td>synthesised</td><td>soft and long, wood, bell</td></tr>
+<tr><td><kbd>HAZE</kbd></td><td>synthesised</td><td>deep, round, with room</td></tr>
+<tr><td><kbd>IRON</kbd></td><td>analogue with recorded hit layers</td><td>rough, metallic, loud</td></tr>
+<tr><td><kbd>DUSTY</kbd></td><td>samples</td><td>dusty, vinyl, pedal</td></tr>
+<tr><td><kbd>RUSTY</kbd></td><td>acoustic kit</td><td>open</td></tr>
+<tr><td><kbd>BRUSH</kbd></td><td>acoustic, brushes</td><td>brushes, stir, swish</td></tr>
+<tr><td><kbd>STUDIO</kbd></td><td>acoustic studio kit</td><td>ghost notes, half-open</td></tr>
+<tr><td><kbd>DRY</kbd></td><td>samples</td><td>dry, snap, splash</td></tr>
+<tr><td><kbd>HAND</kbd></td><td>hand percussion</td><td>cajon, djembe, darbuka, bongo</td></tr>
+<tr><td><kbd>RETRO</kbd></td><td>old kit, vintage miking</td><td>tight and loose hats</td></tr>
+</tbody></table></div>
+
+<h3>SYNTH</h3>
+<p>With the switch on <kbd>SYNTH</kbd>, the pads are notes of a scale. The lowest is bottom left, the root note is brighter. The synth plays one note per step, and tails may overlap. Scale, root and octave are set with <kbd>2ND</kbd>, then SCALE. In <kbd>SOUNDS</kbd> a pad picks one of 16 instruments.</p>
+<figure class="pads"><img src="h/pads-synth-live.jpg" alt="Pads in SYNTH LIVE, ANALOG in A minor" loading="lazy"><figcaption>SYNTH · LIVE with ANALOG. Every pad plays a note of the scale.</figcaption></figure>
+<div class="tw"><table>
+<thead><tr><th>Instrument</th><th>Type</th><th>Knobs in SOUNDS</th></tr></thead>
+<tbody>
+<tr><td><kbd>ANALOG</kbd></td><td>bass, clean, two oscillators in unison</td><td>MORPH · LEVEL</td></tr>
+<tr><td><kbd>SQUELCH</kbd></td><td>dedicated acid voice with diode filter, accent and slide (see below)</td><td>RESONANCE · ENV</td></tr>
+<tr><td><kbd>FOLD</kbd></td><td>snappy pluck</td><td>MORPH · LEVEL</td></tr>
+<tr><td><kbd>FM</kbd></td><td>electric piano with chorus</td><td>MORPH · LEVEL</td></tr>
+<tr><td><kbd>WAVES</kbd></td><td>lead with vibrato and glide</td><td>MORPH · LEVEL</td></tr>
+<tr><td><kbd>PHASE</kbd></td><td>stab</td><td>MORPH · LEVEL</td></tr>
+<tr><td><kbd>ORGAN</kbd></td><td>organ with drawbars</td><td>MORPH · LEVEL</td></tr>
+<tr><td><kbd>CHORDS</kbd></td><td>Every pad plays the chord of its scale degree. In MINOR, MAJOR, DORIAN and PHRYGIAN these are major, minor or diminished triads; SHAPE · MODEL turns them into sevenths. In the pentatonic scales, BLUES and CHROMA they are fifth or fourth chords.</td><td>MORPH · LEVEL</td></tr>
+<tr><td><kbd>STRINGS</kbd></td><td>string machine</td><td>MORPH · LEVEL</td></tr>
+<tr><td><kbd>SUB</kbd></td><td>sine one octave lower, down to C1 with octave −1</td><td>MORPH · LEVEL</td></tr>
+<tr><td><kbd>SAX</kbd></td><td>multisampled tenor sax</td><td>SWELL · LEVEL</td></tr>
+<tr><td><kbd>GUITAR</kbd></td><td>multisampled jazz guitar</td><td>SWELL · LEVEL</td></tr>
+<tr><td><kbd>PLUCK</kbd></td><td>plucked string</td><td>MORPH · LEVEL</td></tr>
+<tr><td><kbd>BELL</kbd></td><td>bell</td><td>MORPH · LEVEL</td></tr>
+<tr><td><kbd>VOWEL</kbd></td><td>sings vowels, does not speak</td><td>MORPH · LEVEL</td></tr>
+<tr><td><kbd>E-BASS</kbd></td><td>multisampled finger bass</td><td>SWELL · LEVEL</td></tr>
+</tbody></table></div>
+<p>Every kick ducks the basses (ANALOG, SQUELCH, SUB, E-BASS) by up to 5 dB and the pads (ORGAN, CHORDS, STRINGS) by up to 3 dB. This is fixed, with no control, and sounds the same in the app, in EXPORT and in the AUv3. Kicks from the sampler do not duck.</p>
+
+<h4>SQUELCH</h4>
+<p>SQUELCH is a dedicated voice for acid bass lines, not a general-purpose synth.</p>
+<ul>
+  <li><b>Diode filter:</b> gentler slope and softer resonance. At high resonance it loses more bass.</li>
+  <li><b>Accent wow:</b> several accents in a row open the filter further each time. After a break, the first accent sounds normal again.</li>
+  <li><kbd>TONE</kbd> = cutoff, <kbd>DECAY</kbd> = decay of the filter envelope (0.05 to 2.45 s).</li>
+  <li><kbd>SOUNDS</kbd>: <kbd>RESONANCE</kbd> and <kbd>ENV</kbd> (filter envelope amount).</li>
+  <li><kbd>SHAPE</kbd> · <kbd>MODEL</kbd>: <kbd>OSC</kbd> with two detents, saw or square, equally loud.</li>
+  <li><kbd>2ND</kbd>, then <kbd>ACCENT</kbd>, knob L = <kbd>BITE</kbd>: how hard accents hit, how far they open the filter, and how much accents in a row build up.</li>
+  <li><kbd>2ND</kbd>, then <kbd>SLIDE</kbd>, knob L = <kbd>GLIDE</kbd>: the slide time.</li>
+  <li><kbd>SHAPE</kbd> · <kbd>DRIVE</kbd> distorts after the voice.</li>
+</ul>
+
+<h3>SAMPLER</h3>
+<div class="duo"><figure class="pads"><img src="h/pads-sampler-live.jpg" alt="Pads in SAMPLER LIVE, start bank" loading="lazy"><figcaption>SAMPLER · LIVE, bank 1. Each pad plays a sound of the bank. Free pads show a microphone.</figcaption></figure><figure class="pads"><img src="h/pads-sampler-sounds.jpg" alt="Pads in SAMPLER SOUNDS, bank overview" loading="lazy"><figcaption>SAMPLER · SOUNDS. Each bank shows its name and type (KIT, NOTES, SLICES). Bank 7 here comes from a sample pack. Free banks show a microphone.</figcaption></figure></div>
+<p>The sampler works like DRUMS. <kbd>SOUNDS</kbd> shows 16 banks, <kbd>LIVE</kbd> the 16 pads of the selected bank. Banks belong to the device, not to a track. So a recording stays, and every track and the AUv3 see the same sounds. Sound settings such as TONE, DECAY and SHAPE values belong to the track.</p>
+<div class="tw"><table>
+<thead><tr><th>Type</th><th>What is in it</th><th>How it plays</th></tr></thead>
+<tbody>
+<tr><td><kbd>KIT</kbd></td><td>16 single sounds, recorded pad by pad</td><td>like drums, each pad with its own step lane</td></tr>
+<tr><td><kbd>NOTES</kbd></td><td>one short pitched sound, tuned to the nearest C</td><td>on the pads in the scale</td></tr>
+<tr><td><kbd>SLICES</kbd></td><td>one longer recording, cut at its hits into up to 16 pieces</td><td>each piece on a pad, like a KIT</td></tr>
+</tbody></table></div>
+<p>SQUAWK decides the type from the content. You never pick it in advance.</p>
+<ul>
+  <li><b>Factory banks:</b> bank 1 is the start bank, a KIT with BUMP, CLAP, CLINK, POP, DROP, KEYRING, RIP, SQ and COCKATOO. Seven pads are free. Banks 2 to 4 hold KEYS, BASS and VIBES (NOTES). Banks 5 and 6 hold TABLA and BREAK (SLICES). Banks 7 to 16 are free.</li>
+  <li><b>Recording needs ● and a stopped sequencer.</b> With the switch on SAMPLER, turn ● on. In LIVE, hold a pad: the recording goes onto that pad. In SOUNDS, hold a bank: the recording fills the whole bank as NOTES or SLICES. Recording starts when your finger touches down and ends when you let go, after 60 s at most. Without ●, a tap only selects.</li>
+  <li><b>Microphone access:</b> iOS asks the first time ● goes on with SAMPLER selected. If you deny it, the display shows <span class="lcd">NO MIC · ALLOW IN SETTINGS</span>.</li>
+  <li><b>After recording,</b> silence is trimmed and the peak is set to −1 dBFS. The pad gets the first free two-letter name (AA, AB …). The glow tip <span class="lcd">SHAPE IT · NAME IT</span> appears. While recording, the waveform runs through the pixel field.</li>
+  <li><b>Protection:</b> if another track uses the sound, the first hold asks: <span class="lcd">USED IN 3 TRACKS · HOLD AGAIN</span>.</li>
+  <li><b>Name</b> a sound on the SHAPE page <kbd>NAME</kbd>. <b>Clear</b> it with RESET · SOUND.</li>
+  <li><kbd>TO SAMPLER</kbd> (2ND, then the pad) turns any drum or synth sound, with all its settings, into a sample on the sampler pad you used last, or into a NOTES bank. Resampling without recording.</li>
+  <li><kbd>IMPORT</kbd> puts an audio file onto the sampler pad you used last, or makes it a NOTES bank.</li>
+  <li><b>Stereo:</b> pack sounds, imported files and TO SAMPLER stay stereo. Microphone recordings and the factory banks are mono.</li>
+  <li><b>Memory:</b> 200 s for all banks together. Stereo counts double. When it is full: <span class="lcd">SAMPLER FULL</span>.</li>
+  <li>In SOUNDS the knobs set <kbd>START</kbd> and <kbd>LEVEL</kbd>. In LIVE, TONE is pitch and DECAY is length.</li>
+</ul>
+
+<h4>Sample packs</h4>
+<p>Put a WAV pack, as a zip or a folder, into Files › On My iPhone › SQUAWK › PACKS. SQUAWK reads new packs whenever the app becomes active. It sorts the sounds by role and makes up to three banks, starting at bank 7: a KIT laid out like the factory kits, plus NOTES and SLICES.</p>
+<ul>
+  <li>The selection is not random. For each role, the most typical and the most contrasting sound go onto the pads.</li>
+  <li>NOTES and SLICES are normalised to −1 dBFS. A KIT keeps its levels.</li>
+  <li>A glow tip reports the result, e.g. <span class="lcd">LO-FI BEATS → 3 BANKS · LB</span>. The whole import is one undo step.</li>
+  <li>WAV, AIFF, FLAC, MP3, M4A and CAF are read. RAR and 7z are not: <span class="lcd">UNZIP FIRST</span>. Damaged or oversized archives show <span class="lcd">ZIP DAMAGED</span> or <span class="lcd">TOO BIG</span>.</li>
+  <li>If a pack KIT bank is selected on the SAMPLER, STYLE puts the drum lines onto its pads instead of the kit.</li>
+  <li>From a Mac, you can copy packs to the iPhone through Finder file sharing.</li>
+</ul>
+
+<h2 id="steps"><span class="no">05</span>STEPS and the sequencer</h2>
+<figure class="pads"><img src="h/pads-drums-steps.jpg" alt="Pads in DRUMS STEPS" loading="lazy"><figcaption>DRUMS · STEPS. Steps of the selected drum are bright, steps of other drums dim. “KICK +2” means two more drums sit on that step.</figcaption></figure>
+<ul>
+  <li><b>16 steps, 16 patterns per track.</b> Timing is sample-accurate and runs in the audio thread.</li>
+  <li><b>Without ●</b> a tap on a step only listens, even when stopped. An empty step stays empty and the display says <span class="lcd">● = WRITE STEPS</span>.</li>
+  <li><b>With ●</b> a tap sets or deletes a step. Knob L picks the drum, the note (all notes of the scale over four octaves) or the sampler pad. Knob R sets the velocity (<kbd>VELO</kbd>). With no step held, this applies to new steps. With a step held, it changes that step.</li>
+  <li><b>Drums in STEPS:</b> a tap with ● only affects the selected drum. So kick and hat can share a step. Holding a step shows all drums on it.</li>
+  <li><b>Move a step:</b> with ●, hold the step and turn knob L. The step moves to another drum or note.</li>
+  <li><b>Parameter lock:</b> with ●, hold a step, tap <kbd>2ND</kbd>, turn a knob. TONE and DECAY then change for that step only. Double-tap the knob to remove the lock. A dot on the pad marks a lock, an effect or CHANCE.</li>
+  <li><b>Live recording:</b> <kbd class="rec">●</kbd> and <kbd>▶</kbd>. From a stop, SQUAWK counts in one empty pass. New hits add to what is there. ▶ stops and ends the recording. Live input is quantised to 16ths.</li>
+  <li><b>Click:</b> there is no metronome switch. The click plays while the pattern has no drums, and stops once a drum is in. It never reaches EXPORT or MIDI out.</li>
+  <li><b>Pattern length:</b> in TEMPO, a pad sets the length from 1 to 16 steps. With 12 steps the count-in counts three.</li>
+  <li><b>Tempo and swing:</b> 60 to 200 BPM in whole steps, with a detent every 5 BPM. Knob R sets the swing.</li>
+</ul>
+
+<h3>PATTERN and CHAIN</h3>
+<ul>
+  <li><kbd>PATTERN</kbd> shows patterns P 01 to P 16. A tap picks and plays. While playing, the switch happens at the end of the current pass. The view stays open until you press PATTERN again, LIVE, STEPS or SHAPE.</li>
+  <li>The first empty pattern is labelled NEW. An empty pattern does not start silence. In PATTERN it says <span class="lcd">EMPTY · LIVE, THEN PADS OR 2ND STYLE</span>. In LIVE, after a short pause with an empty pattern and nothing playing, it says <span class="lcd">EMPTY · TAP PADS OR 2ND STYLE</span>.</li>
+  <li><kbd>CHAIN</kbd> (2ND, then PATTERN, or 2ND while PATTERN is open) shows the current chain. The first tap starts a new chain from that pattern, further taps add to it, up to 64 links. ▶ plays the chain. The position shows in the status line, e.g. <span class="lcd">1/4</span>. Picking a pattern directly ends the chain.</li>
+</ul>
+
+<h3>The 16 second functions</h3>
+<p>Tap <kbd>2ND</kbd>, then the pad. Rows are grouped by theme.</p>
+<div class="tw"><table class="grid4">
+<thead><tr><th>Row</th><th>Pad 1</th><th>Pad 2</th><th>Pad 3</th><th>Pad 4</th></tr></thead>
+<tbody>
+<tr><td>Steps</td><td><kbd>REPEAT</kbd></td><td><kbd>ACCENT</kbd></td><td><kbd>SLIDE</kbd></td><td><kbd>CHANCE</kbd></td></tr>
+<tr><td>Sound, tempo</td><td><kbd>TEMPO</kbd></td><td><kbd>SCALE</kbd></td><td class="muted">(none)</td><td><kbd>TO SAMPLER</kbd></td></tr>
+<tr><td>Pattern, part</td><td><kbd>COPY</kbd></td><td><kbd>CLEAR</kbd></td><td><kbd>COPY PART</kbd></td><td><kbd>CLEAR PART</kbd></td></tr>
+<tr><td>Files</td><td><kbd>SAVE</kbd></td><td><kbd>LOAD</kbd></td><td><kbd>IMPORT</kbd></td><td><kbd>EXPORT</kbd></td></tr>
+</tbody></table></div>
+<p class="small muted">The third pad of row 2 has no second function. STYLE now sits above STEPS.</p>
+<div class="tw"><table>
+<thead><tr><th>Function</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><kbd>REPEAT</kbd></td><td>A step fires 2, 3 or 4 times in a row, for rolls. Each tap counts up, one more tap turns it off.</td></tr>
+<tr><td><kbd>ACCENT</kbd></td><td>A step hits harder. Knob L (<kbd>BITE</kbd>) sets how hard: centre is the default, far left no effect, far right double. BITE is stored per sound.</td></tr>
+<tr><td><kbd>SLIDE</kbd></td><td>A note glides into the next one. Knob L (<kbd>GLIDE</kbd>) sets the glide time per sound. It is the same value as on SHAPE · LEGATO.</td></tr>
+<tr><td><kbd>CHANCE</kbd></td><td>Each tap on a step cycles: always → 75 % → 50 % → 25 % → 1:2 → 2:2 → 1:4 → 4:4 → always. 1:2 plays in the first of every two passes, 2:2 in the second (the answer). 1:4 plays in the first of every four passes, 4:4 in the fourth (the fill). Passes count from start or from switching to the pattern. Skipped steps trigger nothing, not even MIDI.</td></tr>
+<tr><td><kbd>TEMPO</kbd></td><td>Knob L = BPM, knob R = swing, pads = pattern length. Stays open until 2ND.</td></tr>
+<tr><td><kbd>SCALE</kbd></td><td>Pads pick one of eight scales: PENT MIN, PENT MAJ, MINOR, MAJOR, DORIAN, PHRYGIAN, BLUES, CHROMA. Knob L = <kbd>ROOT</kbd>, knob R = <kbd>OCTAVE</kbd> of the instrument (−1 to +1, not on drums). Existing steps keep their notes.</td></tr>
+<tr><td><kbd>TO SAMPLER</kbd></td><td>Turns the shaped sound into a sample on the sampler pad you used last.</td></tr>
+<tr><td><kbd>COPY</kbd></td><td>Copies the pattern to the pattern you tap. Work continues there.</td></tr>
+<tr><td><kbd>CLEAR</kbd></td><td>Empties the pattern, all parts. The glow tip <span class="lcd">CLEARED · 2ND ● = UNDO</span> reminds you of undo.</td></tr>
+<tr><td><kbd>COPY PART</kbd></td><td>Copies the steps of this part to another kit, instrument or bank, which plays them with its own sound.</td></tr>
+<tr><td><kbd>CLEAR PART</kbd></td><td>Empties only this part in this pattern.</td></tr>
+<tr><td><kbd>SAVE</kbd> · <kbd>LOAD</kbd> · <kbd>IMPORT</kbd> · <kbd>EXPORT</kbd></td><td>See <a href="#tracks">chapter 8</a>.</td></tr>
+</tbody></table></div>
+<p>The keys have second functions too: <kbd>2ND</kbd>, then STEPS = STYLE, SOUNDS = MUTE, SHAPE = RESET, PATTERN = CHAIN, ● = UNDO.</p>
+
+<h3 id="style">STYLE in detail</h3>
+<p>STYLE is the one place for ready-made material. It replaces the whole track (see <a href="#first">chapter 2</a>). The pieces use only factory sounds. Each sets tempo, swing, key and kit, and the sound settings of what it plays.</p>
+<div class="tw"><table>
+<thead><tr><th>Pad</th><th>Piece</th><th>Style</th><th>BPM</th><th>Key</th><th>Kit</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td><kbd>RAIN</kbd></td><td>UK garage, 2-step, the start piece</td><td class="n">132</td><td>G minor</td><td>PUNCH</td></tr>
+<tr><td class="n">2</td><td><kbd>NIGHT</kbd></td><td>acid techno with SQUELCH</td><td class="n">128</td><td>A minor</td><td>PUNCH</td></tr>
+<tr><td class="n">3</td><td><kbd>FEVER</kbd></td><td>post-club dembow</td><td class="n">100</td><td>D minor</td><td>BOOM</td></tr>
+<tr><td class="n">4</td><td><kbd>COMET</kbd></td><td>jungle with chopped breaks</td><td class="n">172</td><td>F minor</td><td>DRY</td></tr>
+<tr><td class="n">5</td><td><kbd>FOUND</kbd></td><td>beat from everyday sounds</td><td class="n">90</td><td>D minor</td><td>DUSTY</td></tr>
+<tr><td class="n">6</td><td><kbd>NEON</kbd></td><td>house with chords</td><td class="n">122</td><td>G minor</td><td>PUNCH</td></tr>
+<tr><td class="n">7</td><td><kbd>GOLDEN</kbd></td><td>pop with guitar</td><td class="n">110</td><td>A minor</td><td>STUDIO</td></tr>
+<tr><td class="n">8</td><td><kbd>HOUSE</kbd></td><td>genre</td><td class="n">124</td><td>G minor</td><td>PUNCH</td></tr>
+<tr><td class="n">9</td><td><kbd>LOFI</kbd></td><td>genre</td><td class="n">78</td><td>D minor</td><td>DUSTY</td></tr>
+<tr><td class="n">10</td><td><kbd>DISCO</kbd></td><td>genre</td><td class="n">118</td><td>A minor</td><td>PUNCH</td></tr>
+<tr><td class="n">11</td><td><kbd>TRAP</kbd></td><td>genre</td><td class="n">140</td><td>F minor</td><td>HEAVY</td></tr>
+<tr><td class="n">12</td><td><kbd>DEEP</kbd></td><td>genre</td><td class="n">120</td><td>D♯ minor</td><td>SOFT</td></tr>
+<tr><td class="n">13</td><td><kbd>TECHNO</kbd></td><td>genre</td><td class="n">132</td><td>F minor</td><td>IRON</td></tr>
+<tr><td class="n">14</td><td><kbd>BREAKS</kbd></td><td>genre</td><td class="n">130</td><td>D minor</td><td>DRY</td></tr>
+<tr><td class="n">15</td><td><kbd>AMBIENT</kbd></td><td>genre</td><td class="n">80</td><td>C dorian</td><td>HAZE</td></tr>
+<tr><td class="n">16</td><td><kbd>DUB</kbd></td><td>genre</td><td class="n">118</td><td>A minor</td><td>HAZE</td></tr>
+</tbody></table></div>
+<ul>
+  <li>The seven pieces have four patterns each. Pattern 1 is a full groove that leaves one part free to play along. Patterns 2 to 4 bring build-up, break and peak. Find them with PATTERN.</li>
+  <li>CHANCE keeps four bars alive inside one pattern (1:2 and 2:2 as call and answer, 4:4 as a fill).</li>
+  <li>The sound comes from the sound settings, not from locks on whole lanes. So every knob works.</li>
+  <li>Without its own name, the track is called after its piece, e.g. <span class="lcd">RAIN · PTN 01 · 132 BPM</span>. SAVE gives it a two-letter name.</li>
+</ul>
+
+<h3>Common terms</h3>
+<p>SQUAWK uses its own words. Two of them mean something different from the usual; they are marked.</p>
+<div class="tw"><table>
+<thead><tr><th>SQUAWK</th><th>Usual term</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td><kbd>TRACK</kbd> <span class="pill rec">different</span></td><td>project, set</td><td>A whole project. 15 slots.</td></tr>
+<tr><td><kbd>PART</kbd></td><td>track, lane</td><td>DRUMS, SYNTH, SAMPLER. MASTER is the sum.</td></tr>
+<tr><td>Step with <kbd class="rec">●</kbd></td><td>trig, grid recording</td><td><kbd>STEPS</kbd> + <kbd class="rec">●</kbd>, then tap.</td></tr>
+<tr><td><kbd class="rec">●</kbd> + <kbd>▶</kbd> in LIVE</td><td>live recording, overdub</td><td>Quantised to 16ths.</td></tr>
+<tr><td>Step + <kbd>2ND</kbd> + knob</td><td>parameter lock</td><td>TONE and DECAY only.</td></tr>
+<tr><td>Hold step + knob L</td><td>note or instrument of a trig</td><td>Moves the step, sets no lock. Hint: <span class="lcd">2ND + KNOB = LOCK</span>.</td></tr>
+<tr><td><kbd>CHANCE</kbd></td><td>probability, trig conditions</td><td>75/50/25 %, 1:2, 2:2, 1:4, 4:4.</td></tr>
+<tr><td><kbd>REPEAT</kbd></td><td>ratchets</td><td>2×, 3×, 4×.</td></tr>
+<tr><td><kbd>RETRIG</kbd> <span class="pill rec">different</span></td><td>often a per-step ratchet</td><td>Here an effect on the sum in MASTER.</td></tr>
+<tr><td><kbd>CHAIN</kbd></td><td>pattern chain</td><td>Up to 64 links, no song editor.</td></tr>
+<tr><td><kbd>MASTER</kbd> × <kbd>LIVE</kbd></td><td>performance FX, punch-in FX</td><td>Works while held.</td></tr>
+<tr><td><kbd>MASTER</kbd> × <kbd>STEPS</kbd></td><td>FX locks</td><td>A separate effect lane.</td></tr>
+<tr><td><kbd>SHAPE</kbd></td><td>sound edit</td><td>16 pages with pixel graphics.</td></tr>
+<tr><td><kbd>TO SAMPLER</kbd></td><td>resampling</td><td>As a one-shot, no recording.</td></tr>
+<tr><td><kbd>RESET</kbd></td><td>init, factory reset</td><td>From one sound to everything.</td></tr>
+<tr><td><kbd>EXPORT</kbd></td><td>bounce, render</td><td>Sum as WAV. Single parts via SOLO.</td></tr>
+</tbody></table></div>
+
+<h2 id="shape"><span class="no">06</span>SHAPE: 16 pages per sound</h2>
+<p><kbd>SHAPE</kbd> opens 16 pages for the selected sound. A pad picks the page, knobs L and R set its pair, and the pixel field draws the effect. Each row has a theme: source, colour, envelope, movement. Values belong to the sound and are saved with the track. Pages that do nothing on the current instrument are dark. A bar on a page means it was changed.</p>
+<ul>
+  <li>The big line shows the page. Line 2 shows the instrument and the knobs, e.g. <span class="lcd">ANALOG · Ⓛ FILTER · Ⓡ RESO</span>.</li>
+  <li>When stopped, each change plays the sound briefly. While playing, you hear it in the pattern.</li>
+  <li>Double-tap a knob for the default. Every knob move is one undo step.</li>
+  <li>Leave with SHAPE again or LIVE. <kbd class="rec">●</kbd> in SHAPE goes to LIVE with ● on.</li>
+</ul>
+<figure class="pads"><img src="h/pads-shape.jpg" alt="Pads in SHAPE" loading="lazy"><figcaption>The 16 page pads in SHAPE, here with ENV selected.</figcaption></figure>
+<h3>Source</h3><div class="cards"><article class="card"><img class="lcdimg" src="h/shape-01-model.jpg" alt="MODEL in the display" loading="lazy"><div class="cbody"><h4><span class="no">01</span>MODEL</h4><p class="lr"><span><b>L</b> MODEL; on SQUELCH: OSC</span><span><b>R</b> named per model (DETUNE, RATIO, CHORD, SPEAKER, BAND, MATERIAL, ENERGY …); on SQUELCH: none</span></p><p>Picks the synthesis model of a Plaits-based synth, from VA VCF to HAT in 22 detents. R sets the character of the model. A changed model shows its name. On SQUELCH, L picks saw or square. Dark on SAX, GUITAR, E-BASS, drums and sampler.</p><p><b>YOYO</b> (after MODAL) is a string of masses. Its overtones bloom and come back by themselves, like a yo-yo. With YOYO, R is <kbd>ENERGY</kbd>: 16 detents in four zones. STILL (1–3) is a steady tone. BREATH (4–8) lets one overtone come and go; detent 6 is the default (double-tap). BLOOM (9–12) brings many overtones, then back home. STORM (13–16) never comes back. VELO per step scales the energy, so louder steps breathe faster and deeper. TONE sets the starting shape, from dark to plucked. Pause on ENERGY and line 2 explains the zone.</p><p>Pixel field with YOYO: the very first time, a short opening with the red dot. After that, the return curve of the detent. While a note sounds, the string moves live.</p><img class="lcdimg" src="h/shape-01-model-yoyo.jpg" alt="YOYO on SHAPE · MODEL in the display" loading="lazy"></div></article><article class="card"><img class="lcdimg" src="h/shape-02-tone.jpg" alt="TONE in the display" loading="lazy"><div class="cbody"><h4><span class="no">02</span>TONE</h4><p class="lr"><span><b>L</b> TONE (same value as the knob TONE)</span><span><b>R</b> as in SOUNDS: MORPH, SWELL or ENV; on synthesised kits CRACK</span></p><p>Sets the colour of the source. On synthesised kits (MODULAR, BLIP, SOFT, HAZE, IRON), CRACK sets the click of the kick, the rattle of snare and clap, and the noise of the hats. Dark on sample kits.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-03-pitch.jpg" alt="PITCH in the display" loading="lazy"><div class="cbody"><h4><span class="no">03</span>PITCH</h4><p class="lr"><span><b>L</b> TUNE</span><span><b>R</b> BEND</span></p><p>Tunes the sound by ±24 semitones. R lets the pitch fall or rise after the hit.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-04-legato.jpg" alt="LEGATO in the display" loading="lazy"><div class="cbody"><h4><span class="no">04</span>LEGATO</h4><p class="lr"><span><b>L</b> MODE</span><span><b>R</b> GLIDE</span></p><p>L switches between MONO and LEGATO, R sets the glide time. Synth instruments only.</p></div></article></div>
+<h3>Colour</h3><div class="cards"><article class="card"><img class="lcdimg" src="h/shape-05-filter.jpg" alt="FILTER in the display" loading="lazy"><div class="cbody"><h4><span class="no">05</span>FILTER</h4><p class="lr"><span><b>L</b> FILTER (same value as on the 2ND layer)</span><span><b>R</b> RESO</span></p><p>DJ filter: centre off, left low-pass, right high-pass. R sets the resonance.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-06-env.jpg" alt="ENV in the display" loading="lazy"><div class="cbody"><h4><span class="no">06</span>ENV</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> F-DECAY</span></p><p>Filter envelope with up to ±6 octaves. R sets how fast it decays.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-07-drive.jpg" alt="DRIVE in the display" loading="lazy"><div class="cbody"><h4><span class="no">07</span>DRIVE</h4><p class="lr"><span><b>L</b> DRIVE (on drums the same value as DRIVE in SOUNDS)</span><span><b>R</b> LEVEL</span></p><p>Saturation and level of the sound.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-08-chorus.jpg" alt="CHORUS in the display" loading="lazy"><div class="cbody"><h4><span class="no">08</span>CHORUS</h4><p class="lr"><span><b>L</b> CHORUS</span><span><b>R</b> SWIRL</span></p><p>L sets the chorus amount (stereo width), R its rate from 0.1 to 6 Hz. Far right it is almost vibrato. Synth instruments except SQUELCH.</p></div></article></div>
+<h3>Envelope</h3><div class="cards"><article class="card"><img class="lcdimg" src="h/shape-09-attack.jpg" alt="ATTACK in the display" loading="lazy"><div class="cbody"><h4><span class="no">09</span>ATTACK</h4><p class="lr"><span><b>L</b> ATTACK (same value as on the 2ND layer)</span><span><b>R</b> DECAY (same value as in LIVE)</span></p><p>Fade-in and decay.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-10-sustain.jpg" alt="SUSTAIN in the display" loading="lazy"><div class="cbody"><h4><span class="no">10</span>SUSTAIN</h4><p class="lr"><span><b>L</b> SUSTAIN</span><span><b>R</b> RELEASE (same value as GATE, right)</span></p><p>How loud a held note stays. R sets how long it rings after release. With page 09 the whole envelope sits on two pages. Synth instruments except SQUELCH.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-11-gate.jpg" alt="GATE in the display" loading="lazy"><div class="cbody"><h4><span class="no">11</span>GATE</h4><p class="lr"><span><b>L</b> GATE</span><span><b>R</b> RELEASE</span></p><p>Note length in the sequencer, and the ring-out after release.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-12-space.jpg" alt="SPACE with PLACE CANYON in the display" loading="lazy"><div class="cbody"><h4><span class="no">12</span>SPACE</h4><p class="lr"><span><b>L</b> DISTANCE</span><span><b>R</b> PLACE</span></p><p>The sound stands at a place, and the place is built to the tempo. DISTANCE has 16 detents from 0.3 to 40 m; the default is 2.4 m. Nearer is louder, farther is quieter, darker and later. Line 2 shows e.g. <span class="lcd">DISTANCE 8 M</span>.</p><p>PLACE has 16 places: BOX, BOOTH, KITCHEN, CLUB, HALL, CHURCH, CAR PARK, TUNNEL, YARD, CANYON, FIELD, FOREST, LAKE, SNOW, NEXT ROOM, STREET. BOX is the default and sounds as before, with the usual reverb and delay. Where a place has walls, they answer on the tempo grid, e.g. <span class="lcd">PLACE HALL · 1/16</span>. Pause on PLACE and line 2 describes the place.</p><p>The pixel field shows the place from above, with you at the bottom. On each hit, every wall lights up when its reflection reaches you. Bass stays in the centre at every place. TO SAMPLER always renders in BOX.</p></div></article></div>
+<h3>Movement and extras</h3><div class="cards"><article class="card"><img class="lcdimg" src="h/shape-13-lfo.jpg" alt="LFO in the display" loading="lazy"><div class="cbody"><h4><span class="no">13</span>LFO</h4><p class="lr"><span><b>L</b> DEPTH</span><span><b>R</b> RATE</span></p><p>Depth and rate (0.1 to 20 Hz) of the LFO. It restarts with every hit.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-14-lfo-to.jpg" alt="LFO TO in the display" loading="lazy"><div class="cbody"><h4><span class="no">14</span>LFO TO</h4><p class="lr"><span><b>L</b> TARGET</span><span><b>R</b> WAVE</span></p><p>L picks the LFO target (PITCH, FILTER, TIMBRE, LEVEL), R its waveform (SIN, TRI, SQR, SAW, S&amp;H).</p></div></article><article class="card"><img class="lcdimg" src="h/shape-15-name.jpg" alt="NAME in the display" loading="lazy"><div class="cbody"><h4><span class="no">15</span>NAME</h4><p class="lr"><span><b>L</b> LETTER 1</span><span><b>R</b> LETTER 2</span></p><p>Gives a sampler sound a two-letter name. It applies at once and shows in the pixel field. Sampler sounds only.</p></div></article><article class="card"><!-- RESHOOT: Display-Bild GENE LAB fehlt noch (Platzhalter). --><div class="lcdph"><span>GENE LAB</span><small>on sampler pads</small></div><div class="cbody"><h4><span class="no">16</span>GENE LAB</h4><p class="lr"><span><b>L</b> PARTNER</span><span><b>R</b> MUTATE</span></p><p>Crosses the sound with a partner over four genes: CLICK (the attack), BODY (the tones in it), NOISE (noise and air) and TAIL (the decay). PARTNER picks the second sound, similar ones first; on a pack sound, the pack comes first. MUTATE has 16 detents, from your own sound through mixes to the partner itself. Each detent puts the result on the pad and plays it. The knobs follow your finger smoothly; only the detent you stop on is computed. Pause on PARTNER or MUTATE and line 2 explains it. When you leave the page, the result stays, with a name mixed from both parents. One undo step per visit. Works on sampler pads in KIT and NOTES banks. Not on SLICES, not on drums yet, and not in the AUv3.</p></div></article></div>
+
+<h2 id="master"><span class="no">07</span>MASTER: 16 effects</h2>
+<p><kbd>MASTER</kbd> puts the effects on the sum. In <kbd>LIVE</kbd> an effect works while its pad is held. Knob L sets AMOUNT, knob R the character of the effect you played last. The big line shows the effect and the pixel field draws its shape. With <kbd>STEPS</kbd> and <kbd class="rec">●</kbd> you write effects onto steps: L picks the effect, R its amount.</p>
+<ul>
+  <li>AMOUNT fully left is dry, for all 16 effects. Up to about a quarter, the effect fades in smoothly. So you can turn an effect in and out live while you hold it. The default is 70 %.</li>
+  <li>With ● and ▶ in MASTER × LIVE, held effects are recorded onto steps, like LIVE recording.</li>
+  <li>When stopped, holding an effect repeats the last sound in eighths, so you hear the effect.</li>
+  <li>In MASTER × STEPS without ●, a tap on a step with an effect shows it. With ●, a tap on an empty step sets the effect chosen with knob L, and a tap on a step with an effect removes it. Knob R sets its amount; here too, fully left is dry.</li>
+  <li>All effects work in stereo and keep the stereo image.</li>
+</ul>
+<figure class="pads"><img src="h/pads-master-live.jpg" alt="Pads in MASTER LIVE" loading="lazy"><figcaption>MASTER · LIVE. Effects in four rows by type.</figcaption></figure>
+<h3>Filter</h3><div class="cards"><article class="card"><img class="lcdimg" src="h/fx-01-lopass.jpg" alt="LOPASS in the display" loading="lazy"><div class="cbody"><h4><span class="no">01</span>LOPASS</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> PEAK</span></p><p>Low-pass on the sum, closes with AMOUNT. PEAK sets the resonance.</p></div></article><article class="card"><img class="lcdimg" src="h/fx-02-hipass.jpg" alt="HIPASS in the display" loading="lazy"><div class="cbody"><h4><span class="no">02</span>HIPASS</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> PEAK</span></p><p>High-pass on the sum, opens with AMOUNT. PEAK sets the resonance.</p></div></article><article class="card"><img class="lcdimg" src="h/fx-03-sweep.jpg" alt="SWEEP in the display" loading="lazy"><div class="cbody"><h4><span class="no">03</span>SWEEP</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> SPEED</span></p><p>A low-pass that moves in time and speeds up with more amount. SPEED steps in note values.</p></div></article><article class="card"><img class="lcdimg" src="h/fx-04-phaser.jpg" alt="PHASER in the display" loading="lazy"><div class="cbody"><h4><span class="no">04</span>PHASER</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> SPEED</span></p><p>Phaser with moving notches. SPEED is the rate of the movement.</p></div></article></div>
+<h3>Rhythm</h3><div class="cards"><article class="card"><img class="lcdimg" src="h/fx-05-stutter.jpg" alt="STUTTER in the display" loading="lazy"><div class="cbody"><h4><span class="no">05</span>STUTTER</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> SPAN</span></p><p>Repeats the same slice at even intervals. SPAN is the slice length, in steps of two.</p></div></article><article class="card"><img class="lcdimg" src="h/fx-06-retrig.jpg" alt="RETRIG in the display" loading="lazy"><div class="cbody"><h4><span class="no">06</span>RETRIG</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> SPAN</span></p><p>Repeats that get shorter and denser. SPAN is the slice length.</p></div></article><article class="card"><img class="lcdimg" src="h/fx-07-pump.jpg" alt="PUMP in the display" loading="lazy"><div class="cbody"><h4><span class="no">07</span>PUMP</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> SPEED</span></p><p>The level ducks on every quarter and comes back. AMOUNT is the depth, SPEED steps in note values.</p></div></article><article class="card"><img class="lcdimg" src="h/fx-08-strobe.jpg" alt="STROBE in the display" loading="lazy"><div class="cbody"><h4><span class="no">08</span>STROBE</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> SPEED</span></p><p>Square gate in 16ths, in 32nds with more amount. SPEED steps in note values.</p></div></article></div>
+<h3>Time</h3><div class="cards"><article class="card"><img class="lcdimg" src="h/fx-09-tape.jpg" alt="TAPE in the display" loading="lazy"><div class="cbody"><h4><span class="no">09</span>TAPE</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> WOW</span></p><p>Tape stop: tempo and pitch wind down. WOW adds wobble (default 0).</p></div></article><article class="card"><img class="lcdimg" src="h/fx-10-reverse.jpg" alt="REVERSE in the display" loading="lazy"><div class="cbody"><h4><span class="no">10</span>REVERSE</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> SPAN</span></p><p>Plays what you just heard backwards. SPAN is the slice length.</p></div></article><article class="card"><img class="lcdimg" src="h/fx-11-echo.jpg" alt="ECHO in the display" loading="lazy"><div class="cbody"><h4><span class="no">11</span>ECHO</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> TIME</span></p><p>Echo on the sum. TIME is the distance in steps: 1, 2, 3, 4, 6 or 8 (default 3). More AMOUNT means longer repeats. Repeats bounce left and right.</p></div></article><article class="card"><img class="lcdimg" src="h/fx-12-wash.jpg" alt="WASH in the display" loading="lazy"><div class="cbody"><h4><span class="no">12</span>WASH</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> SIZE</span></p><p>Long reverb on the sum. SIZE is the room size.</p></div></article></div>
+<h3>Colour</h3><div class="cards"><article class="card"><img class="lcdimg" src="h/fx-13-crush.jpg" alt="CRUSH in the display" loading="lazy"><div class="cbody"><h4><span class="no">13</span>CRUSH</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> BITS</span></p><p>Bitcrusher. BITS is the resolution, coarser to the left, finer to the right.</p></div></article><article class="card"><img class="lcdimg" src="h/fx-14-fuzz.jpg" alt="FUZZ in the display" loading="lazy"><div class="cbody"><h4><span class="no">14</span>FUZZ</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> COLOR</span></p><p>Distortion that clips the wave top and bottom. COLOR goes from dark to bright.</p></div></article><article class="card"><img class="lcdimg" src="h/fx-15-ring.jpg" alt="RING in the display" loading="lazy"><div class="cbody"><h4><span class="no">15</span>RING</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> FREQ</span></p><p>Ring modulator. FREQ is the frequency of the carrier.</p></div></article><article class="card"><img class="lcdimg" src="h/fx-16-warp.jpg" alt="WARP in the display" loading="lazy"><div class="cbody"><h4><span class="no">16</span>WARP</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> SPEED</span></p><p>Wobbling pitch: the wave is squeezed and stretched in time. SPEED is the wobble rate.</p></div></article></div>
+
+<h3>MUTE and SOLO</h3>
+<p><kbd>2ND</kbd>, then <kbd>SOUNDS</kbd> opens MUTE. The pads show the drums of the selected kit, the synth instruments, or the pads of the selected bank. A tap mutes or unmutes one sound. A muted pad shows a speaker symbol.</p>
+<p>In MUTE, tap the selected part on the switch again: it plays solo, and all sounds of the other two parts are muted. Tap again for all. SOLO is one undo step; single mute taps are not. 2ND leaves MUTE.</p>
+
+<h2 id="tracks"><span class="no">08</span>Tracks, SAVE, LOAD, files</h2>
+<p>A <b>track</b> is a whole project: 16 patterns, chain, tempo, swing, scale, root, all sound settings, SHAPE values, effect characters, mutes, octaves and the last selected sounds. There are 15 slots, TR 01 to TR 15. All of them are yours. There are no demo slots; ready-made pieces live under STYLE.</p>
+<div class="tw"><table>
+<thead><tr><th>Function</th><th>How</th></tr></thead>
+<tbody>
+<tr><td><kbd>SAVE</kbd></td><td><span class="lcd">SAVE · PICK SLOT</span>. The current slot saves at once. A free slot takes the track, and you keep working there. A used slot asks first: the red LED blinks and the display says <span class="lcd">OVERWRITE TR 03? TAP AGAIN</span>. Pad 16 (FILE) writes a backup file.</td></tr>
+<tr><td>Names</td><td>Exactly two capital letters, no keyboard. In SAVE, knob L picks the first letter and knob R the second. SAVE suggests the first free name. On a new slot, untouched knobs use the suggestion. If a name is taken, the next free one is used. The confirmation reads like <span class="lcd">SAVED TR 05 · AC</span>.</td></tr>
+<tr><td><kbd>LOAD</kbd></td><td><span class="lcd">LOAD · PICK TRACK</span>. A used slot opens its track. The current track is saved first. A free slot starts a new, empty track (<span class="lcd">NEW · TR 05</span>, 120 BPM); the first free slot is labelled NEW. Undo starts fresh after LOAD.</td></tr>
+<tr><td>Backup</td><td>SAVE, pad 16: a <code>.squawk</code> file with the track and the sampler banks it uses, including your recordings. File name e.g. “TR 03 2026-11-11 14-03.squawk”. Opens on release; drag off the pad to cancel.</td></tr>
+<tr><td><kbd>IMPORT</kbd></td><td>Shows only backups and audio files. A backup replaces the current track (one undo step) and brings its banks onto the device. An audio file lands on the sampler pad you used last. Opens on release.</td></tr>
+<tr><td><kbd>EXPORT</kbd></td><td>WAV of the pattern (4 passes) or of the chain (1 pass). It loops cleanly: reverb and delay tails from the end are already at the start, and the length is sample-exact. 24-bit with dither, 48 kHz, stereo. File name e.g. “SQUAWK TR03 PTN01 128BPM.wav”. Opens on release.</td></tr>
+<tr><td>Autosave</td><td>About one second after every change, into the current slot. In this beta, see the fresh start in <a href="#beta">chapter 11</a>.</td></tr>
+<tr><td><kbd>UNDO</kbd></td><td><kbd>2ND</kbd>, then <kbd class="rec">●</kbd>. Global, 64 steps. The display names what was undone, e.g. <span class="lcd">UNDO · CLEAR</span>. LOAD starts a new undo history.</td></tr>
+</tbody></table></div>
+
+<h4>RESET (<kbd>2ND</kbd>, then <kbd>SHAPE</kbd>)</h4>
+<p>Going back to factory is called RESET and lives in one place. Every pad asks first (red LED, <span class="lcd">… ? TAP AGAIN</span>). Only the second tap acts.</p>
+<div class="tw"><table>
+<thead><tr><th>Pad</th><th>What</th><th>Undo</th></tr></thead>
+<tbody>
+<tr><td><kbd>SOUND</kbd></td><td>This one sound back to factory. On your own recording, it clears the pad.</td><td>yes</td></tr>
+<tr><td><kbd>PART</kbd></td><td>The whole part back to factory: kit, instrument or bank. Recordings stay.</td><td>yes</td></tr>
+<tr><td><kbd>TRACK</kbd></td><td>Empties this track. Its name stays. Ready-made pieces are under STYLE.</td><td>yes</td></tr>
+<tr><td><kbd>ALL TRACKS</kbd></td><td>Empties all 15 tracks. Names and recordings stay.</td><td>no</td></tr>
+<tr><td><kbd>ALL BANKS</kbd></td><td>All sampler banks back to factory. Your recordings are deleted.</td><td>no</td></tr>
+<tr><td><kbd>LIKE NEW</kbd></td><td>Everything as freshly installed: all tracks, names, banks and recordings are deleted. RAIN waits in TR 01, and the tour starts again.</td><td>no</td></tr>
+</tbody></table></div>
+
+<h2 id="midi"><span class="no">09</span>MIDI, AUv3, iPad and Mac</h2>
+<h4>MIDI (in and out)</h4>
+<ul>
+  <li>Notes, clock, start, stop, continue, song position. Ports and virtual ports are called SQUAWK. USB MIDI works directly. Bluetooth MIDI must be paired first, for example in a host app.</li>
+  <li>Fixed channels in the app: synth 1, sampler 2, drums 10. Notes 36 to 51 are pads 1 to 16; on the synth, note 36 is C2. Notes play like pads, and velocity is used.</li>
+  <li>Outgoing notes carry the velocity of the step (VELO), and accents go out louder.</li>
+  <li>Program change 0 to 15 on any channel picks pattern 1 to 16, at the end of the current pattern.</li>
+  <li><b>Whoever starts first leads.</b> If SQUAWK starts itself, it sends clock and ignores incoming clock. Otherwise it follows the incoming clock and keeps running if the clock stops.</li>
+  <li>SQUAWK filters its own echo and listens to one clock source at a time.</li>
+  <li>The LED at “MIDI IN · OUT” shows the connection. While MIDI is connected, audio keeps running in the background.</li>
+</ul>
+<h4>AUv3</h4>
+<ul>
+  <li>In the host the plug-in is listed as “Holzäpfel: SQUAWK”. It shows the same interface and fits any window from 300 × 300 pt. One instance per song is enough, since it holds all three parts.</li>
+  <li>MIDI in the plug-in is omni: notes on every channel play the part selected on the switch, with the same note map as above. Outgoing MIDI stays on the fixed channels.</li>
+  <li>Tempo and swing are host parameters. The host saves the state. The engine runs at 48 kHz and converts other rates. The plug-in reports 55 samples of latency.</li>
+  <li><kbd>LOAD</kbd> in the plug-in opens the tracks of the app, read-only, as one undo step. The sampler banks are the same as in the app.</li>
+  <li>Not in the plug-in: microphone, SAVE to slots, pack scanning, GENE LAB and the tour. RESET offers only SOUND, PART and TRACK. One stereo output.</li>
+</ul>
+<h4>iPad and landscape</h4>
+<p>The same parts, arranged by the window’s aspect ratio. No new words, no menu.</p>
+<ul>
+  <li>Tall window: the iPhone layout, scaled up.</li>
+  <li>Wide window (iPad landscape, many host windows): switch and pads on the right, display, knobs and keys on the left.</li>
+  <li>Very flat window: a strip with the keys at the edge.</li>
+  <li>The iPhone app stays in portrait. The iPad app runs in all four orientations.</li>
+</ul>
+<h4>Mac with Apple silicon</h4>
+<ul>
+  <li>A click is a tap, click and hold is a hold. Drag knobs vertically, double-click to reset. EXPORT and backups go through the Mac share menu (“Save”).</li>
+  <li>There is only one pointer. Two-finger moves do not work: hold a step and turn a knob, parameter locks, two pads at once, hold an effect and turn AMOUNT. Set the knobs first instead.</li>
+  <li>No haptics on the Mac.</li>
+</ul>
+
+<h2 id="help"><span class="no">10</span>Hold any key for help</h2>
+<ul>
+  <li><b>Hold to learn.</b> Hold any key for about half a second. It still does its job at once, and line 2 adds a short guide as scrolling text. Let go to stop it. Example for <kbd class="rec">●</kbd>: <span class="lcd">RECORD. NOTHING CHANGES WITHOUT IT.</span></li>
+  <li><b>Second functions:</b> tap <kbd>2ND</kbd>, then hold the engraved pad or key. You get the explanation, and the function works as usual. 2ND itself and the pads have no hold help, because holding a pad records, holds a step or holds an effect.</li>
+  <li><b>When you pause.</b> After about 1.5 s without input, line 2 explains the current view, e.g. <span class="lcd">TAP = LISTEN · ● = WRITE STEPS</span>. A knob explains itself the same way after you stop turning: <span class="lcd">DECAY · HOW LONG IT RINGS</span>. Any input hides it. Status comes before explanation.</li>
+  <li><b>Glow tips</b> answer an input at once, e.g. <span class="lcd">● = WRITE STEPS</span> when you try to write without ●.</li>
+  <li><b>The tour</b> lights the next control in orange, see <a href="#first">chapter 2</a>.</li>
+  <li><b>Accessibility:</b> VoiceOver and Voice Control use the English names and the same guides. Reduce Motion turns off the lamp test, scenes and fades, and the tour glows steadily instead of breathing. Increase Contrast makes engravings and pad text brighter.</li>
+  <li><b>Someone lives in the box.</b> Now and then a small figure appears in the pixel field when it is free. That is intended. Any input ends it.</li>
+</ul>
+<h3>Things to try</h3>
+<p>Outside the beta, each start shows one of these tips, from simple to deep. In this beta every cold start counts as the first, so you will mostly see <span class="lcd">PRESS ▶ TO PLAY</span>. Here they are:</p>
+<ul>
+  <li>2ND, then STEPS: STYLE, 16 ready beats to build on.</li>
+  <li>● and ▶ record what you play on the pads. It adds up, like a tape.</li>
+  <li>SAMPLER, stopped: press ●, hold a pad and make a noise. It records until you let go.</li>
+  <li>Turn TONE and DECAY while it plays. 2ND + knob switches them to FILTER and ATTACK.</li>
+  <li>SYNTH, SOUNDS, CHORDS: every pad plays a chord that fits the scale. 2ND, then SCALE changes it.</li>
+  <li>SAMPLER, stopped: press ●, in SOUNDS hold a free bank and count to eight. Every number becomes a pad.</li>
+  <li>2ND, then CHANCE: steps that play only sometimes, so the loop stays alive.</li>
+  <li>MASTER, then STEPS: effects on single steps.</li>
+  <li>SHAPE, page GENE LAB on a sampler pad: cross two sounds.</li>
+</ul>
+
+<h2 id="beta"><span class="no">11</span>Beta notes and feedback</h2>
+<div class="box rec">
+<p><b>Fresh start on every cold launch.</b> In TestFlight builds, SQUAWK starts like the very first time after every cold launch. A cold launch means the app was quit, closed by iOS, or updated. Coming back from the background is not a cold launch.</p>
+<ul>
+  <li><b>Kept:</b> every slot you saved with SAVE, including everything autosaved there afterwards. All sampler banks, with your recordings and pack sounds.</li>
+  <li><b>Dropped:</b> work you never saved: the start piece you played with, a STYLE piece you never saved, and NEW tracks without SAVE.</li>
+  <li><b>After the restart:</b> RAIN sits in the first free slot and is the current track. The tour and the start tips begin again.</li>
+  <li>The plug-in is not affected; there the host saves the state.</li>
+</ul>
+<p>So: if you want to keep something, use <kbd>2ND</kbd>, then SAVE, and tap a slot.</p>
+</div>
+
+<h3>Recent changes</h3>
+<ul>
+  <li>Tour: 14 steps on first start, from ▶ to the microphone. The next control breathes orange, line 2 names the step. Any other key ends it; it starts again next time until you finish it once.</li>
+  <li>YOYO: a new model on SHAPE · MODEL for the Plaits-based synths. Knob R is ENERGY, in four zones: STILL, BREATH, BLOOM, STORM.</li>
+  <li>SHAPE · SPACE is now DISTANCE · PLACE, with 16 places built to the tempo. BOX sounds as before.</li>
+  <li>MASTER: AMOUNT fully left is dry for all 16 effects, so you can fade an effect in and out.</li>
+  <li>GENE LAB: the knobs move smoothly, and PARTNER and MUTATE explain themselves when you pause.</li>
+  <li>STYLE (2ND, then STEPS) is the one place for ready-made material: 16 pieces, with RAIN, NIGHT, FEVER and COMET in the first row. A tap replaces the whole track, as one undo step, and asks first if the track holds your work.</li>
+  <li>No demo slots. All 15 track slots are yours.</li>
+  <li>PATTERN and STYLE stay open, so you can listen through.</li>
+  <li>Sound: all kits play at the same loudness, effects stay stereo, the reverb has a short pre-delay, and the kick ducks basses and pads.</li>
+  <li>SHAPE page 16 is now GENE LAB (PARTNER · MUTATE). It crosses two sampler sounds.</li>
+  <li>CHANCE adds 2:2 and 4:4.</li>
+  <li>The empty-pattern hint now points to STYLE: <span class="lcd">EMPTY · TAP PADS OR 2ND STYLE</span>.</li>
+</ul>
+
+<h3>Things to try in this build</h3>
+<ul>
+  <li>Follow the tour once to the end. On another cold start, leave it halfway with a different key.</li>
+  <li>SYNTH, SHAPE, page MODEL: turn L to YOYO. Play a few notes and turn ENERGY from STILL to STORM. Set steps with different VELO.</li>
+  <li>SHAPE, page SPACE: put the snare in CANYON or YARD and change the tempo. The walls move with it. Try DISTANCE near and far.</li>
+  <li>MASTER, LIVE: hold an effect and turn AMOUNT slowly from fully left. There should be no jump and no click.</li>
+  <li>GENE LAB on a sampler pad: turn PARTNER and MUTATE fast, then pause.</li>
+</ul>
+
+<h3>Sending feedback</h3>
+<ul>
+  <li><b>Screenshot:</b> take a screenshot in SQUAWK, tap the thumbnail, then tap the share button and choose “Share Beta Feedback”. Add a line of text.</li>
+  <li><b>Without a screenshot:</b> open the TestFlight app, pick SQUAWK, tap “Send Beta Feedback”.</li>
+  <li><b>After a crash,</b> TestFlight offers to send a report. Please accept and add what you were doing.</li>
+  <li>Helpful in every report: what you did, what you expected, what happened. Which keys were lit, and what the display said. Headphones, audio interface or host app, if any.</li>
+  <li>Sound reports: name the track or STYLE piece, the pattern and the tempo from the status line.</li>
+</ul>
+
+<h3>Please test especially</h3>
+<ul>
+  <li>USB audio interfaces with sample rates other than 48 kHz.</li>
+  <li>MIDI clock from a computer or hardware over long sessions.</li>
+  <li>Several plug-in instances in one host, and reopening host projects (the sampler banks should be found again, without copies).</li>
+  <li>GarageBand and Logic on the Mac, and microphone and MIDI on the Mac.</li>
+  <li>Sample packs from your own library.</li>
+</ul>
+
+<h3>Known limits</h3>
+<ul>
+  <li>No Ableton Link.</li>
+  <li>No stems. Export single parts via SOLO.</li>
+  <li>No MIDI CC. In the plug-in, only tempo and swing are host parameters.</li>
+  <li>The synth is monophonic. CHORDS plays one chord per step.</li>
+  <li>At most 16 steps. One pattern length for all parts. No triplets.</li>
+  <li>Live input is quantised to 16ths.</li>
+  <li>Parameter locks for TONE and DECAY only.</li>
+  <li>GENE LAB works on sampler pads only.</li>
+  <li>At most 16 sounds can stand at a place other than BOX at once. A 17th plays in BOX.</li>
+  <li>The plug-in has one stereo output.</li>
+  <li>On the Mac there is one pointer, so no two-finger moves.</li>
+  <li>Bluetooth headphones add latency, as in every app. SQUAWK does not compensate for it.</li>
+</ul>
+<h3>By design</h3>
+<p>These will not come, because they would turn the device into a small DAW: piano roll, song arrangement editor, mixer page, effect racks, menus, a second screen, hidden key combinations, a keyboard for names, numeric entry for patterns.</p>
+
+<h2 id="ways"><span class="no">12</span>Eight ways in</h2>
+<p>Each store image stands for one way through the app. Know these eight and you know SQUAWK.</p>
+
+<div class="weg"><figure><img src="i/en-iphone-01.jpg" alt="Store image 1"></figure><div>
+<h3>1 · One device, three parts</h3><p class="claim">Drums, synth, sampler. One device.</p>
+<ol>
+<li>Open the app and press <kbd>▶</kbd>. RAIN plays.</li>
+<li>The switch <kbd>DRUMS</kbd> · <kbd>SYNTH</kbd> · <kbd>SAMPLER</kbd> picks which part the pads play. All three keep playing.</li>
+<li>In <kbd>LIVE</kbd>, tap the pads; the selected part plays along.</li>
+<li><kbd class="rec">●</kbd> and <kbd>▶</kbd> start recording with a count-in. New hits add up. <kbd>▶</kbd> stops and ends the recording.</li>
+</ol>
+<p class="why">All three play at once. One screen, no menus.</p>
+</div></div>
+
+<div class="weg"><figure><img src="i/en-iphone-02.jpg" alt="Store image 2"></figure><div>
+<h3>2 · Shape every sound</h3><p class="claim">16 pages for every sound.</p>
+<ol>
+<li>In LIVE the knobs set TONE and DECAY. With <kbd>2ND</kbd> they set FILTER and ATTACK.</li>
+<li><kbd>SOUNDS</kbd> picks the sound (kit, instrument, bank). There the knobs set two more values, e.g. DRIVE and LEVEL.</li>
+<li><kbd>SHAPE</kbd> has 16 pages in four rows: source (MODEL, TONE, PITCH, LEGATO), colour (FILTER, ENV, DRIVE, CHORUS), envelope (ATTACK, SUSTAIN, GATE, SPACE), movement (LFO, LFO TO, NAME, GENE LAB). The display draws every change.</li>
+<li><kbd>2ND</kbd>, then <kbd>SHAPE</kbd> opens RESET.</li>
+</ol>
+<!-- RESHOOT: Video B zeigt SHAPE · SPACE noch mit HALL · DELAY (vor 18. Nov. 2026). --><figure style="max-width:220px"><video controls playsinline preload="metadata" src="i/video-b-iphone.mp4"></video><figcaption>Video B “Shape it”, 22 s: a free bank becomes a NOTES bank, then SHAPE with LFO and SPACE.</figcaption></figure>
+</div></div>
+
+<div class="weg"><figure><img src="i/en-iphone-03.jpg" alt="Store image 3"></figure><div>
+<h3>3 · Your own packs</h3><p class="claim">Your WAV pack becomes a kit.</p>
+<ol>
+<li>Put a sample pack, zip or folder, into Files › SQUAWK › PACKS.</li>
+<li>SQUAWK sorts the sounds by role and builds up to three banks from bank 7: a KIT in the layout of the factory kits, plus NOTES and SLICES.</li>
+<li>The 16 sampler banks belong to the device. Every sound is available in every track and in the plug-in.</li>
+</ol>
+<p class="why">Drop in a zip or folder. It lands on the pads.</p>
+</div></div>
+
+<div class="weg"><figure><img src="i/en-iphone-04.jpg" alt="Store image 4"></figure><div>
+<h3>4 · Build it by hand</h3><p class="claim">Build it by hand.</p>
+<ol>
+<li><kbd>STEPS</kbd> turns the pads into 16 steps.</li>
+<li>Turn on <kbd class="rec">●</kbd>. Knob L picks drum or note, knob R the velocity. A tap sets or deletes a step.</li>
+<li>Add detail with <kbd>2ND</kbd>: REPEAT, ACCENT, SLIDE and CHANCE.</li>
+<li><kbd>PATTERN</kbd> shows 16 patterns; a tap picks and plays. <kbd>2ND</kbd>, then <kbd>PATTERN</kbd> chains them. <kbd>2ND</kbd>, then <kbd>STEPS</kbd> opens STYLE as a starting point.</li>
+</ol>
+<p class="why">16 steps with accent, slide and chance. No AI.</p>
+<figure style="max-width:220px"><video controls playsinline preload="metadata" src="i/video-c-iphone.mp4"></video><figcaption>Video C “Build it”, 17 s: kick on 1, 5, 9 and 13, knob L picks CLAP and CL HAT, then PATTERN leads to a full pattern.</figcaption></figure>
+</div></div>
+
+<div class="weg"><figure><img src="i/en-iphone-05.jpg" alt="Store image 5"></figure><div>
+<h3>5 · Your voice</h3><p class="claim">Your voice on the pads.</p>
+<ol>
+<li>Switch to <kbd>SAMPLER</kbd>, turn on <kbd class="rec">●</kbd>, keep the sequencer stopped.</li>
+<li>In <kbd>LIVE</kbd>, hold a pad, make a sound, let go. Up to 60 seconds.</li>
+<li>SQUAWK trims the silence and sets the level. A tap plays it.</li>
+<li>In <kbd>SOUNDS</kbd>, holding a bank records into the whole bank. It becomes NOTES (one sound across the pads in pitch) or SLICES (cut into up to 16 pieces).</li>
+</ol>
+<p class="why">Sing, clap or knock. Play it in your beat.</p>
+</div></div>
+
+<div class="weg"><figure><img src="i/en-iphone-06.jpg" alt="Store image 6"></figure><div>
+<h3>6 · Play it live</h3><p class="claim">Twist the beat live.</p>
+<ol>
+<li><kbd>MASTER</kbd> and <kbd>LIVE</kbd> turn the pads into 16 effects. An effect works while its pad is held.</li>
+<li>Knob L sets the amount, knob R the character, e.g. the echo time.</li>
+<li>Four rows: filter (LOPASS, HIPASS, SWEEP, PHASER), rhythm (STUTTER, RETRIG, PUMP, STROBE), time (TAPE, REVERSE, ECHO, WASH), colour (CRUSH, FUZZ, RING, WARP).</li>
+<li><kbd>2ND</kbd>, then <kbd>SOUNDS</kbd> opens MUTE. Tap the part on the switch again for SOLO.</li>
+</ol>
+<p class="why">Hold an effect. Let go, and the beat is back.</p>
+</div></div>
+
+<div class="weg"><figure><img src="i/en-iphone-07.jpg" alt="Store image 7"></figure><div>
+<h3>7 · The built-in guide</h3><p class="claim">Every key explains itself.</p>
+<ol>
+<li>Hold any key for about half a second. It does its job, and line 2 explains it as scrolling text.</li>
+<li>For a second function, tap <kbd>2ND</kbd> first, then hold the engraving.</li>
+<li>Pause for about 1.5 seconds and a line explains the view or the knob. Any input hides it.</li>
+</ol>
+<p class="why">Hold a key. The display tells you what it does.</p>
+</div></div>
+
+<div class="weg"><figure><img src="i/en-iphone-08.jpg" alt="Store image 8"></figure><div>
+<h3>8 · Everything included</h3><p class="claim">Everything included.</p>
+<ol>
+<li><kbd>2ND</kbd>, then <kbd>STEPS</kbd> opens STYLE: 16 ready pieces and genres.</li>
+<li>15 track slots via <kbd>2ND</kbd> SAVE and LOAD, each with 16 patterns, plus backup files.</li>
+<li><kbd>2ND</kbd> EXPORT writes the beat as a seamless 24-bit WAV loop.</li>
+<li>iPhone, iPad and Mac with Apple silicon. Runs as an AUv3 plug-in in music apps. MIDI in and out, with clock.</li>
+</ol>
+<p class="why">No in-app purchases, no subscription.</p>
+</div></div>
+
+<footer>SQUAWK tester handbook · 18 November 2026 · Confidential until launch.</footer>
+</div>
+
+</html>
