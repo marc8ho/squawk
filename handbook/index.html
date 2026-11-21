@@ -171,8 +171,6 @@ details.ref > .inner { padding: 0 0 1.4rem; }
 .card p { margin: .3rem 0 0; font-size: .93rem; }
 figure.pads { max-width: 560px; }
 figure.pads img { border-radius: 10px; }
-.lcdph { background: var(--lcd); color: var(--lcd-ink); aspect-ratio: 1090 / 300; display: flex; flex-direction: column; justify-content: center; padding: 0 7%; font: 500 1.6rem/1.2 var(--mono); letter-spacing: .08em; }
-.lcdph small { font-size: .8rem; opacity: .7; letter-spacing: .04em; }
 .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
 .duo > * { min-width: 0; }
 /* Teil-Köpfe */
@@ -189,6 +187,12 @@ h2.part .no { font-size: .8rem; letter-spacing: .14em; text-transform: uppercase
 .legend li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: start; margin: 0; }
 .legend .n { width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: var(--bg); font: 600 14px/26px var(--mono); text-align: center; }
 @media (max-width: 640px) { .device { grid-template-columns: minmax(0, 1fr); } .shot { max-width: 260px; } }
+/* Display mit Marken (Kapitel 14) */
+figure.lcdshot { max-width: 560px; }
+.lcdmk { position: relative; }
+.lcdmk img { width: 100%; border-radius: 10px; background: var(--lcd); }
+.lcdmk .mk { width: 22px; height: 22px; font-size: 12px; line-height: 22px; }
+figure.lcdshot + .legend { margin-bottom: 1.2rem; }
 
 /* Landkarte */
 table.map th, table.map td { text-align: center; }
@@ -246,15 +250,14 @@ table.howto td:first-child { width: 36%; font-weight: 600; }
 <p class="lead">SQUAWK is a loop that plays in a circle. Three players are on it: drums, synth and sampler. They always play together.</p>
 <p>The switch says whose turn it is on the 16 pads. The keys below the pads say what the pads do. When <kbd class="rec">●</kbd> is red, what you play or tap stays on the loop.</p>
 <div class="device">
-  <!-- RESHOOT: Ganzes Gerät ohne Store-Text im Zustand des ersten Starts (DRUMS · LIVE, RAIN, Kit PUNCH, ▶ läuft). Platzhalter ist ein Rohbild vom 17. Nov. (SAMPLER, Track SQ, PTN 04); die Marken sitzen in Prozent und passen, solange das Bild das ganze Gerät im Hochformat 440 × 956 zeigt. -->
-  <figure class="shot"><img src="i/device.jpg" alt="SQUAWK, the whole device, with seven numbered marks">
-    <span class="mk" style="left:50%;top:14%">1</span>
-    <span class="mk" style="left:50%;top:26%">2</span>
-    <span class="mk" style="left:38.6%;top:37.2%">3</span>
-    <span class="mk" style="left:50%;top:61.5%">4</span>
+  <figure class="shot"><img src="i/device.jpg" alt="SQUAWK at first start: DRUMS · LIVE, RAIN playing, with seven numbered marks">
+    <span class="mk" style="left:50%;top:11%">1</span>
+    <span class="mk" style="left:50%;top:25%">2</span>
+    <span class="mk" style="left:38.6%;top:37.1%">3</span>
+    <span class="mk" style="left:50%;top:51.7%">4</span>
     <span class="mk" style="left:50%;top:87.7%">5</span>
     <span class="mk" style="left:72.7%;top:94%">6</span>
-    <span class="mk" style="left:15.5%;top:90.8%">7</span>
+    <span class="mk" style="left:15.5%;top:97.4%">7</span>
   </figure>
   <ol class="legend">
     <li><span class="n">1</span><div><b>Display.</b> Big: the sound the knobs change. Small, line 2: what is happening right now.</div></li>
@@ -309,7 +312,7 @@ table.howto td:first-child { width: 36%; font-weight: 600; }
 <li>Turn it further until it says CL HAT. Tap 3, 7, 11 and 15.</li>
 </ol>
 <p>A wrong step? Tap it again, and it is gone.</p>
-<!-- RESHOOT: Neues Bild für das Rezept: DRUMS · STEPS auf einem NEW-Pattern mit KICK 1/5/9/13, CLAP 5/13, CL HAT 3/7/11/15 (h/pads-drums-steps.jpg zeigt ein volles fremdes Pattern). -->
+<figure style="max-width:220px"><img src="i/rezept-steps.jpg" alt="DRUMS · STEPS on the new loop: KICK on 1, 5, 9 and 13, CL HAT on 3, 7, 11 and 15" loading="lazy"><figcaption>Your beat in STEPS, KICK picked. Its steps are bright. CL HAT on 3, 7, 11 and 15 is dim. “KICK +1” on 5 and 13: the clap plays there too.</figcaption></figure>
 </div></div>
 <div class="minute"><span class="t">3:00</span><div>
 <h3>Play something on top</h3>
@@ -534,8 +537,7 @@ table.howto td:first-child { width: 36%; font-weight: 600; }
 <!-- RESHOOT: Video B zeigt SHAPE · SPACE noch mit HALL · DELAY (vor 18. Nov. 2026). Das Drehbuch steht seit 6f89323 auf PLACE · CANYON; ob die Datei online schon neu ist, prüfen. --><figure style="max-width:220px"><video controls playsinline preload="metadata" src="i/video-b-iphone.mp4"></video><figcaption>Video B “Shape it”, 22 s: a free bank becomes a NOTES bank, then SHAPE with LFO and SPACE.</figcaption></figure>
 </div></div>
 
-<div class="weg" id="w-song"><figure><div class="lcdph" style="aspect-ratio:auto;padding:18px 12px;font-size:1.1rem;border-radius:10px"><span>CHAIN 3</span><small>TAP PATTERNS IN ORDER · ▶ = PLAY</small></div></figure><div>
-<!-- RESHOOT: Für diesen Weg gibt es kein Store-Bild. Vorschlag: PATTERN offen mit Kette (Pads 1 2 3, Statuszeile 1/3). -->
+<div class="weg" id="w-song"><figure><img src="i/kette.jpg" alt="PATTERN with a chain of loops 1, 2, 3 playing; line 2 shows 1/3"><figcaption>A chain of three loops plays. The pads show the order, line 2 shows <span class="lcd">1/3</span>.</figcaption></figure><div>
 <h3>12 · From loop to song</h3>
 <p>You get a song: loops played one after another, and a WAV file of it.</p>
 <ol>
@@ -592,13 +594,18 @@ table.howto td:first-child { width: 36%; font-weight: 600; }
 </ul>
 
 <h3>The display</h3>
-<!-- RESHOOT: Ein beschriftetes Bild nur des Displays (große Zeile, Zeile 2, Pixelfeld, ■/▶ mit ●) würde diesen Abschnitt ersetzen. -->
-<ul>
-  <li><b>Big line:</b> what the knobs set right now. Usually the sound: a drum, an instrument or a sample. In SHAPE it is the page, in MASTER the effect.</li>
-  <li><b>Line 2:</b> what is happening. A knob value, a held step, a hint, or the status line with track, loop and tempo, e.g. <span class="lcd">RAIN · PTN 01 · 132 BPM · PUNCH</span>.</li>
-  <li><b>Pixel field, right:</b> the loop of all three parts as dots. While you turn a knob, the value. In SHAPE, the curve of the page.</li>
-  <li><b>Top right:</b> ■ when stopped, ▶ when playing. A red ● in front while ● is on.</li>
-</ul>
+<figure class="lcdshot"><div class="lcdmk"><img src="h/display.jpg" alt="The display in SHAPE, page FILTER, recording while playing, with four numbered marks" loading="lazy">
+    <span class="mk" style="left:39%;top:38%">1</span>
+    <span class="mk" style="left:51.5%;top:72.5%">2</span>
+    <span class="mk" style="left:52.5%;top:41%">3</span>
+    <span class="mk" style="left:90%;top:26%">4</span>
+  </div><figcaption>SHAPE, page FILTER, while ● records and ▶ plays.</figcaption></figure>
+<ol class="legend">
+  <li><span class="n">1</span><div><b>Big line:</b> what the knobs set right now. Usually the sound: a drum, an instrument or a sample. In SHAPE it is the page (here FILTER), in MASTER the effect.</div></li>
+  <li><span class="n">2</span><div><b>Line 2:</b> what is happening. A knob value (here <span class="lcd">FILTER 080 · RESO 000</span>), a held step, a hint, or the status line with track, loop and tempo, e.g. <span class="lcd">RAIN · PTN 01 · 132 BPM · PUNCH</span>.</div></li>
+  <li><span class="n">3</span><div><b>■ or ▶, next to the big line:</b> ■ when stopped, ▶ when playing. A red ● in front while ● is on.</div></li>
+  <li><span class="n">4</span><div><b>Pixel field, right:</b> the loop of all three parts as dots. While you turn a knob, the value. In SHAPE, the curve of the page (here the filter).</div></li>
+</ol>
 
 <h3>Keys and what they open</h3>
 <ul>
@@ -784,7 +791,7 @@ table.howto td:first-child { width: 36%; font-weight: 600; }
 <h3>Source</h3><div class="cards"><article class="card"><img class="lcdimg" src="h/shape-01-model.jpg" alt="MODEL in the display" loading="lazy"><div class="cbody"><h4><span class="no">01</span>MODEL</h4><p class="lr"><span><b>L</b> MODEL; on SQUELCH: OSC</span><span><b>R</b> named per model (DETUNE, RATIO, CHORD, SPEAKER, BAND, MATERIAL, ENERGY …); on SQUELCH: none</span></p><p>Picks how the synth makes its sound: 22 models, from VA VCF to HAT, one per click. R sets the character of the model. Works on the synths whose SOUNDS knobs read MORPH · LEVEL. A changed model shows its name. On SQUELCH, L picks saw or square. Dark on SAX, GUITAR, E-BASS, drums and sampler.</p><p><b>YOYO</b> (after MODAL) is a string of masses. Its overtones bloom and come back by themselves, like a yo-yo. With YOYO, R is <kbd>ENERGY</kbd>: 16 clicks in four zones. STILL (1–3) is a steady tone. BREATH (4–8) lets one overtone come and go; 6 is the default (double-tap). BLOOM (9–12) brings many overtones, then back home. STORM (13–16) never comes back. VELO per step scales the energy, so louder steps breathe faster and deeper. TONE sets the starting shape, from dark to plucked. Pause on ENERGY and line 2 explains the zone.</p><p>Pixel field with YOYO: the very first time, a short opening with the red dot. After that, the curve of how the sound comes back. While a note sounds, the string moves live.</p><img class="lcdimg" src="h/shape-01-model-yoyo.jpg" alt="YOYO on SHAPE · MODEL in the display" loading="lazy"></div></article><article class="card"><img class="lcdimg" src="h/shape-02-tone.jpg" alt="TONE in the display" loading="lazy"><div class="cbody"><h4><span class="no">02</span>TONE</h4><p class="lr"><span><b>L</b> TONE (same value as the knob TONE)</span><span><b>R</b> as in SOUNDS: MORPH, SWELL or ENV; on synthesised kits CRACK</span></p><p>Sets the colour of the source. On synthesised kits (MODULAR, BLIP, SOFT, HAZE, IRON), CRACK sets the click of the kick, the rattle of snare and clap, and the noise of the hats. Dark on sample kits.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-03-pitch.jpg" alt="PITCH in the display" loading="lazy"><div class="cbody"><h4><span class="no">03</span>PITCH</h4><p class="lr"><span><b>L</b> TUNE</span><span><b>R</b> BEND</span></p><p>Tunes the sound by ±24 semitones. R lets the pitch fall or rise after the hit.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-04-legato.jpg" alt="LEGATO in the display" loading="lazy"><div class="cbody"><h4><span class="no">04</span>LEGATO</h4><p class="lr"><span><b>L</b> MODE</span><span><b>R</b> GLIDE</span></p><p>L picks MONO or LEGATO, R sets the glide time. Synth instruments only.</p></div></article></div>
 <h3>Colour</h3><div class="cards"><article class="card"><img class="lcdimg" src="h/shape-05-filter.jpg" alt="FILTER in the display" loading="lazy"><div class="cbody"><h4><span class="no">05</span>FILTER</h4><p class="lr"><span><b>L</b> FILTER (same value as FILTER after 2ND)</span><span><b>R</b> RESO</span></p><p>DJ filter: centre off, left low-pass, right high-pass. R sets the resonance.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-06-env.jpg" alt="ENV in the display" loading="lazy"><div class="cbody"><h4><span class="no">06</span>ENV</h4><p class="lr"><span><b>L</b> AMOUNT</span><span><b>R</b> F-DECAY</span></p><p>Filter envelope with up to ±6 octaves. R sets how fast it decays.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-07-drive.jpg" alt="DRIVE in the display" loading="lazy"><div class="cbody"><h4><span class="no">07</span>DRIVE</h4><p class="lr"><span><b>L</b> DRIVE (on drums the same value as DRIVE in SOUNDS)</span><span><b>R</b> LEVEL</span></p><p>Saturation and level of the sound.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-08-chorus.jpg" alt="CHORUS in the display" loading="lazy"><div class="cbody"><h4><span class="no">08</span>CHORUS</h4><p class="lr"><span><b>L</b> CHORUS</span><span><b>R</b> SWIRL</span></p><p>L sets the chorus amount (stereo width), R its rate from 0.1 to 6 Hz. Far right it is almost vibrato. Synth instruments except SQUELCH.</p></div></article></div>
 <h3>Envelope</h3><div class="cards"><article class="card"><img class="lcdimg" src="h/shape-09-attack.jpg" alt="ATTACK in the display" loading="lazy"><div class="cbody"><h4><span class="no">09</span>ATTACK</h4><p class="lr"><span><b>L</b> ATTACK (same value as ATTACK after 2ND)</span><span><b>R</b> DECAY (same value as in LIVE)</span></p><p>Fade-in and decay.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-10-sustain.jpg" alt="SUSTAIN in the display" loading="lazy"><div class="cbody"><h4><span class="no">10</span>SUSTAIN</h4><p class="lr"><span><b>L</b> SUSTAIN</span><span><b>R</b> RELEASE (same value as GATE, right)</span></p><p>How loud a held note stays. R sets how long it rings after release. With page 09 the whole envelope sits on two pages. Synth instruments except SQUELCH.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-11-gate.jpg" alt="GATE in the display" loading="lazy"><div class="cbody"><h4><span class="no">11</span>GATE</h4><p class="lr"><span><b>L</b> GATE</span><span><b>R</b> RELEASE</span></p><p>Note length in the sequencer, and the ring-out after release.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-12-space.jpg" alt="SPACE with PLACE CANYON in the display" loading="lazy"><div class="cbody"><h4><span class="no">12</span>SPACE</h4><p class="lr"><span><b>L</b> DISTANCE</span><span><b>R</b> PLACE</span></p><p>The sound stands at a place, and the place is built to the tempo. DISTANCE has 16 steps from 0.3 to 40 m; the default is 2.4 m. Nearer is louder, farther is quieter, darker and later. Line 2 shows e.g. <span class="lcd">DISTANCE 8 M</span>.</p><p>PLACE has 16 places: BOX, BOOTH, KITCHEN, CLUB, HALL, CHURCH, CAR PARK, TUNNEL, YARD, CANYON, FIELD, FOREST, LAKE, SNOW, NEXT ROOM, STREET. BOX is the default, with the usual reverb and delay. Where a place has walls, they answer on the tempo grid, e.g. <span class="lcd">PLACE HALL · 1/16</span>. Pause on PLACE and line 2 describes the place.</p><p>The pixel field shows the place from above, with you at the bottom. On each hit, every wall lights up when its reflection reaches you. Bass stays in the centre at every place. TO SAMPLER always renders in BOX.</p></div></article></div>
-<h3>Movement and extras</h3><div class="cards"><article class="card"><img class="lcdimg" src="h/shape-13-lfo.jpg" alt="LFO in the display" loading="lazy"><div class="cbody"><h4><span class="no">13</span>LFO</h4><p class="lr"><span><b>L</b> DEPTH</span><span><b>R</b> RATE</span></p><p>Depth and rate (0.1 to 20 Hz) of the LFO. It restarts with every hit.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-14-lfo-to.jpg" alt="LFO TO in the display" loading="lazy"><div class="cbody"><h4><span class="no">14</span>LFO TO</h4><p class="lr"><span><b>L</b> TARGET</span><span><b>R</b> WAVE</span></p><p>L picks the LFO target (PITCH, FILTER, TIMBRE, LEVEL), R its waveform (SIN, TRI, SQR, SAW, S&amp;H).</p></div></article><article class="card"><img class="lcdimg" src="h/shape-15-name.jpg" alt="NAME in the display" loading="lazy"><div class="cbody"><h4><span class="no">15</span>NAME</h4><p class="lr"><span><b>L</b> LETTER 1</span><span><b>R</b> LETTER 2</span></p><p>Gives a sampler sound a two-letter name. It applies at once and shows in the pixel field. Sampler sounds only.</p></div></article><article class="card"><!-- RESHOOT: Display-Bild GENE LAB fehlt noch (Platzhalter). --><div class="lcdph"><span>GENE LAB</span><small>on sampler pads</small></div><div class="cbody"><h4><span class="no">16</span>GENE LAB</h4><p class="lr"><span><b>L</b> PARTNER</span><span><b>R</b> MUTATE</span></p><p>Crosses the sound with a partner over four genes: CLICK (the attack), BODY (the tones in it), NOISE (noise and air) and TAIL (the decay). PARTNER picks the second sound, similar ones first; on a pack sound, the pack comes first. MUTATE has 16 clicks, from your own sound through mixes to the partner itself. Each click puts the result on the pad and plays it. The knobs follow your finger smoothly; only the click you stop on is computed. Pause on PARTNER or MUTATE and line 2 explains it. When you leave the page, the result stays, with a name mixed from both parents. One undo step per visit. Works on sampler pads in KIT and NOTES banks. Not on SLICES, not on drums, and not in the AUv3.</p></div></article></div>
+<h3>Movement and extras</h3><div class="cards"><article class="card"><img class="lcdimg" src="h/shape-13-lfo.jpg" alt="LFO in the display" loading="lazy"><div class="cbody"><h4><span class="no">13</span>LFO</h4><p class="lr"><span><b>L</b> DEPTH</span><span><b>R</b> RATE</span></p><p>Depth and rate (0.1 to 20 Hz) of the LFO. It restarts with every hit.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-14-lfo-to.jpg" alt="LFO TO in the display" loading="lazy"><div class="cbody"><h4><span class="no">14</span>LFO TO</h4><p class="lr"><span><b>L</b> TARGET</span><span><b>R</b> WAVE</span></p><p>L picks the LFO target (PITCH, FILTER, TIMBRE, LEVEL), R its waveform (SIN, TRI, SQR, SAW, S&amp;H).</p></div></article><article class="card"><img class="lcdimg" src="h/shape-15-name.jpg" alt="NAME in the display" loading="lazy"><div class="cbody"><h4><span class="no">15</span>NAME</h4><p class="lr"><span><b>L</b> LETTER 1</span><span><b>R</b> LETTER 2</span></p><p>Gives a sampler sound a two-letter name. It applies at once and shows in the pixel field. Sampler sounds only.</p></div></article><article class="card"><img class="lcdimg" src="h/shape-16-gene-lab.jpg" alt="GENE LAB in the display" loading="lazy"><div class="cbody"><h4><span class="no">16</span>GENE LAB</h4><p class="lr"><span><b>L</b> PARTNER</span><span><b>R</b> MUTATE</span></p><p>Crosses the sound with a partner over four genes: CLICK (the attack), BODY (the tones in it), NOISE (noise and air) and TAIL (the decay). PARTNER picks the second sound, similar ones first; on a pack sound, the pack comes first. MUTATE has 16 clicks, from your own sound through mixes to the partner itself. Each click puts the result on the pad and plays it. The knobs follow your finger smoothly; only the click you stop on is computed. Pause on PARTNER or MUTATE and line 2 explains it. When you leave the page, the result stays, with a name mixed from both parents. One undo step per visit. Works on sampler pads in KIT and NOTES banks. Not on SLICES, not on drums, and not in the AUv3.</p></div></article></div>
 
 <h2 id="master"><span class="no">17</span>MASTER: 16 effects</h2>
 <p><kbd>MASTER</kbd> puts effects on everything. In <kbd>LIVE</kbd> an effect works while its pad is held. The left knob sets AMOUNT, the right knob the character of the effect you played last. The big line shows the effect and the pixel field draws its shape. With <kbd>STEPS</kbd> and <kbd class="rec">●</kbd> you write effects onto steps: L picks the effect, R its amount.</p>
